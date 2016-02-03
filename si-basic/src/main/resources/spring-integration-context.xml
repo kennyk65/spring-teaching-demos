@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<gateway 
+		service-interface="com.demo.ex.service.CarAssemblyPlant"
+		default-request-channel="toEngineShop"
+	/>
+	
+	<channel id="toEngineShop"/>
+	
+	<service-activator 
+		input-channel="toEngineShop" 
+		ref="engineShop" 
+		output-channel="toBodyShop"
+		/>
+	
+	<channel id="toBodyShop"/>
+
+	<service-activator 
+		input-channel="toBodyShop" 
+		ref="bodyShop" 
+		output-channel="toPaintShop"
+		/>
+		
+	<channel id="toPaintShop"/>
+	
+	<service-activator 
+		input-channel="toPaintShop" 
+		ref="paintShop" 
+		/>
+
+
+
+	<beans:bean id="bodyShop" class="com.demo.ex.service.BodyShopImpl"/>
+	<beans:bean id="engineShop" class="com.demo.ex.service.EngineShopImpl"/>
+	<beans:bean id="paintShop" class="com.demo.ex.service.PaintShopImpl"/>
+	
+</beans:beans>
