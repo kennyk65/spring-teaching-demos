@@ -22,15 +22,5 @@ public class Config {
 	public C c() {
 		return new C();
 	}
-	
-	@Bean
-	public BeanFactoryPostProcessor bfpp() {
-		return new BFPP();
-	}
-	
-	@Bean
-	public BeanPostProcessor bpp() {
-		return new BPP();
-	}
-	
+
 }
