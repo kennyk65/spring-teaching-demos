@@ -1,0 +1,7 @@
+---
+spring:
+  application:
+    name: lab-3-client
+  cloud:
+    config:
+      uri: http://localhost:8001
