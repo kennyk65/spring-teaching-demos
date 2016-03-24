@@ -49,7 +49,7 @@ public class SyncErrorHandlingTest {
 			service.divideByZero(100);
 			fail("Exception expected");
 		} catch (Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 		}
 	}
 

@@ -8,7 +8,6 @@
 
 	<gateway service-interface="com.demo.ex.service.SimpleGateway"
 		default-request-channel="input"
-		
 	/>
 	
 	<int:channel id="input" >
