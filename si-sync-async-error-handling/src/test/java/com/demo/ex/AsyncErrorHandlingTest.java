@@ -54,7 +54,7 @@ public class AsyncErrorHandlingTest {
 		MessagingTemplate mt = new MessagingTemplate(errorChannel);
 		Exception e = (Exception)mt.receiveAndConvert(Exception.class);
 		assertNotNull(e);
-		System.out.println(e);
+		e.printStackTrace();
 	}
 
 }
