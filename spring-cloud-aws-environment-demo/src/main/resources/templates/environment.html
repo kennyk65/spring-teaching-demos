@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>AWS Test Web Server Application</title>
+<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" title="default" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+
+</head>
+
+<body> 
+
+<!-- start content -->
+<center>
+<div id="content" class="container">
+			<center>
+				<img src="AWS_Logo_Web_200px.png" />
+				<br/>
+				<br/>
+			<h2>Instance Metadata</h2>
+			<p style="font-style:italic;">(From the locally installed metadata service http://169.254.169.254/latest)</p>
+
+	<table id="content-table">
+	<tr>
+		<th>Metadata</th>
+		<th></th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td>Instance</td>
+		<td>ID:<br/>Type:<br/>AMI:<br/>Action:</td>
+		<td>
+			<span th:text="${instanceMetadata?.instanceId?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
+			<span th:text="${instanceMetadata?.instanceType?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
+			<span th:text="${instanceMetadata?.amiId?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
+			<span th:text="${instanceMetadata?.instanceAction?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
+		</td>
+	</tr>
+	<tr>
+		<td>Local</td>
+		<td>IP:<br/>Hostname:<br/></td>
+		<td>
+			<span th:text="${instanceMetadata?.localIpv4?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
+			<span th:text="${instanceMetadata?.localHostname?:'-NA-'}">-NA- (Not running on EC2 instance)</span>
+		</td>
+	</tr>
+	<tr>
+		<td>Public</td>
+		<td>IP:<br/>Hostname:<br/></td>
+		<td>
+			<span th:text="${instanceMetadata?.publicIpv4?:'-NA-'}">-NA- </span><br/>
+			<span th:text="${instanceMetadata?.publicHostname?:'-NA-'}">-NA- </span>
+		</td>
+	</tr>
+	<tr>
+		<td>Hostname</td>
+		<td/>
+		<td>
+			<span th:text="${instanceMetadata?.hostname?:'-NA-'}">-NA- </span>
+		</td>
+	</tr>
+	<tr>
+		<td>mac</td>
+		<td/>
+		<td>
+			<span th:text="${instanceMetadata?.mac?:'-NA-'}">-NA- </span>
+		</td>
+	</tr>
+	<tr>
+		<td>Reservation ID</td>
+		<td/>
+		<td>
+			<span th:text="${instanceMetadata?.reservationId?:'-NA-'}">-NA- </span>
+		</td>
+	</tr>
+	<tr>
+		<td>Security Groups</td>
+		<td/>
+		<td>
+			<span th:text="${instanceMetadata?.securityGroups?:'-NA-'}">-NA- </span>
+		</td>
+	</tr>
+	<tr>
+		<td>Placement</td>
+		<td>Availability Zone</td>
+		<td><span th:text="${instanceMetadata?.availabilityZone?:'-NA-'}">-NA-</span></td>
+	</tr>
+
+
+
+	</table>
+
+</center>
+<!--  end content -->
+</div>
+</center>
+ 
+</body>
+</html>
