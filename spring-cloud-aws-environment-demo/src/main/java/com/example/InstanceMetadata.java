@@ -202,7 +202,6 @@ public class InstanceMetadata {
 //	block-device-mapping/
 //	network/
 //	placement/
-//	public-keys/
 //	services/	
 	
 }

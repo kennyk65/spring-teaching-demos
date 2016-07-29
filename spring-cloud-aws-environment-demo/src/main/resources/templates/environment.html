@@ -18,17 +18,22 @@
 				<img src="AWS_Logo_Web_200px.png" />
 				<br/>
 				<br/>
-			<h2>Instance Metadata</h2>
-			<p style="font-style:italic;">(From the locally installed metadata service http://169.254.169.254/latest)</p>
 
-	<table id="content-table">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">
+  <h2>Instance Metadata</h2>
+  <p>(From the locally installed metadata service http://169.254.169.254/latest)</p></div>
+	
+	<table id="content-table" class="table">
 	<tr>
-		<th>Metadata</th>
 		<th></th>
+		<th>Metadata</th>
 		<th>Value</th>
 	</tr>
 	<tr>
-		<td>Instance</td>
+		<td>	<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span>
+		Instance</td>
 		<td>ID:<br/>Type:<br/>AMI:<br/>Action:</td>
 		<td>
 			<span th:text="${instanceMetadata?.instanceId?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
@@ -38,7 +43,10 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Local</td>
+		<td>
+			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>
+			Local
+		</td>
 		<td>IP:<br/>Hostname:<br/></td>
 		<td>
 			<span th:text="${instanceMetadata?.localIpv4?:'-NA-'}">-NA- (Not running on EC2 instance)</span><br/>
@@ -46,7 +54,10 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Public</td>
+		<td>
+			<span class="glyphicon glyphicon-cloud" aria-hidden="true"></span>
+			Public
+		</td>
 		<td>IP:<br/>Hostname:<br/></td>
 		<td>
 			<span th:text="${instanceMetadata?.publicIpv4?:'-NA-'}">-NA- </span><br/>
@@ -54,43 +65,55 @@
 		</td>
 	</tr>
 	<tr>
-		<td>Hostname</td>
+		<td>
+			<span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+			Hostname
+		</td>
 		<td/>
 		<td>
 			<span th:text="${instanceMetadata?.hostname?:'-NA-'}">-NA- </span>
 		</td>
 	</tr>
 	<tr>
-		<td>mac</td>
+		<td>
+			<span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+			mac
+		</td>
 		<td/>
 		<td>
 			<span th:text="${instanceMetadata?.mac?:'-NA-'}">-NA- </span>
 		</td>
 	</tr>
 	<tr>
-		<td>Reservation ID</td>
+		<td>	<span class="glyphicon glyphicon-leaf" aria-hidden="true"></span>
+		Reservation ID</td>
 		<td/>
 		<td>
 			<span th:text="${instanceMetadata?.reservationId?:'-NA-'}">-NA- </span>
 		</td>
 	</tr>
 	<tr>
-		<td>Security Groups</td>
+		<td>
+			<span class="glyphicon glyphicon-ban-circle" aria-hidden="true"></span>
+			Security Groups
+		</td>
 		<td/>
 		<td>
 			<span th:text="${instanceMetadata?.securityGroups?:'-NA-'}">-NA- </span>
 		</td>
 	</tr>
 	<tr>
-		<td>Placement</td>
+		<td>
+			<span class="glyphicon glyphicon-bookmark" aria-hidden="true"></span>
+			Placement
+		</td>
 		<td>Availability Zone</td>
 		<td><span th:text="${instanceMetadata?.availabilityZone?:'-NA-'}">-NA-</span></td>
 	</tr>
-
-
-
 	</table>
-
+</div>
+	<span class="glyphicon glyphicon-leaf" aria-hidden="true"/>
+	<a href="/actuator">Spring Actuator</a>
 </center>
 <!--  end content -->
 </div>
