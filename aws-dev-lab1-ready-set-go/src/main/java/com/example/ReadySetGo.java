@@ -19,8 +19,11 @@ public class ReadySetGo {
 
 	Logger logger = LoggerFactory.getLogger(ReadySetGo.class);
 	
+	//	The AmazonS3 client is already setup for us by Spring Cloud AWS,
+	//	All we have to do is inject and use:
 	@Autowired AmazonS3 s3;
 
+	//	Run as soon as Bean is instantiated:
 	@PostConstruct
 	public void atStartup() {
 		
