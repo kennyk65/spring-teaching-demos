@@ -87,6 +87,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+
+			<!-- Useful plugin for deploying straight to Beanstalk. -->
+		    <plugin>
+		      <groupId>br.com.ingenieux</groupId>
+		      <artifactId>beanstalk-maven-plugin</artifactId>
+		      <version>1.5.0</version>
+		    </plugin>
 		</plugins> 
 	</build>
 
