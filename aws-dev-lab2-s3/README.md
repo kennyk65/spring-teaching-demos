@@ -1,5 +1,5 @@
 # 
-Spring Cloud AWS version of the AWS Dev course's "Ready Set Go" solution.
+Spring Cloud AWS version of the AWS Dev course's S3 Lab solution.
 
 features:
 - Demonstrates minimal usage of a Spring Cloud AWS
