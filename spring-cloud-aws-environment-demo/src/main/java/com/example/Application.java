@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class Application extends SpringBootServletInitializer {
 
-	
 	/**
 	 * Used when launching within a web container...
 	 */
