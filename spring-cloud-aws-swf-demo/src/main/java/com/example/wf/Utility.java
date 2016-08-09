@@ -1,6 +1,5 @@
 package com.example.wf;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,21 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.simpleworkflow.AmazonSimpleWorkflowClient;
 import com.amazonaws.services.simpleworkflow.model.ActivityTask;
-import com.amazonaws.services.simpleworkflow.model.ActivityType;
 import com.amazonaws.services.simpleworkflow.model.ChildPolicy;
-import com.amazonaws.services.simpleworkflow.model.Decision;
 import com.amazonaws.services.simpleworkflow.model.DecisionTask;
 import com.amazonaws.services.simpleworkflow.model.DomainAlreadyExistsException;
 import com.amazonaws.services.simpleworkflow.model.HistoryEvent;
-import com.amazonaws.services.simpleworkflow.model.PollForActivityTaskRequest;
-import com.amazonaws.services.simpleworkflow.model.PollForDecisionTaskRequest;
 import com.amazonaws.services.simpleworkflow.model.RegisterActivityTypeRequest;
 import com.amazonaws.services.simpleworkflow.model.RegisterDomainRequest;
 import com.amazonaws.services.simpleworkflow.model.RegisterWorkflowTypeRequest;
-import com.amazonaws.services.simpleworkflow.model.RespondDecisionTaskCompletedRequest;
-import com.amazonaws.services.simpleworkflow.model.Run;
-import com.amazonaws.services.simpleworkflow.model.ScheduleActivityTaskDecisionAttributes;
-import com.amazonaws.services.simpleworkflow.model.StartWorkflowExecutionRequest;
 import com.amazonaws.services.simpleworkflow.model.TaskList;
 import com.amazonaws.services.simpleworkflow.model.TypeAlreadyExistsException;
 import com.amazonaws.services.simpleworkflow.model.WorkflowType;
@@ -34,15 +25,15 @@ public class Utility {
 
 	static Logger logger = LoggerFactory.getLogger(Utility.class);
 	
-	public static final String DOMAIN_NAME = "test";
-	public static final String WORKFLOW_NAME = "TestWorkflow";
+	public static final String DOMAIN_NAME = "Demo";
+	public static final String WORKFLOW_NAME = "FoolOnTheHillFlow";
 	public static final String WORKFLOW_VERSION = "1.0";
-    public static final String ACTIVITY_1 = "HelloActivity";
-    public static final String ACTIVITY_2 = "WorldActivity";
+    public static final String ACTIVITY_1 = "step_one";
+    public static final String ACTIVITY_2 = "step_two";
     public static final String ACTIVITY_VERSION = "1.0";
 	public static final String TWENTY_SECONDS = "20";
 	public static final String ONE_DAY = "1";
-	public static final String TASKLIST = "TEST_TASKLIST";
+	public static final String TASKLIST = "TASKLIST";
 	
 	@Autowired AmazonSimpleWorkflowClient swf;
 
@@ -94,10 +85,10 @@ public class Utility {
 	            .withName(ACTIVITY_1)
 	            .withVersion(ACTIVITY_VERSION)
 	            .withDefaultTaskList(getTaskList())
-	            .withDefaultTaskScheduleToStartTimeout("10")
-	            .withDefaultTaskStartToCloseTimeout("10")
-	            .withDefaultTaskScheduleToCloseTimeout("10")
-	            .withDefaultTaskHeartbeatTimeout("10"));
+	            .withDefaultTaskScheduleToStartTimeout("5")		//	5 seconds to get assigned
+	            .withDefaultTaskStartToCloseTimeout("2")		//	Two seconds to process
+	            .withDefaultTaskScheduleToCloseTimeout("7")		//	Not sure
+	            .withDefaultTaskHeartbeatTimeout("20"));		//	Frequency of heartbeats
 	    }
 	    catch (TypeAlreadyExistsException e) {
 			logger.info("Activity Type '" + ACTIVITY_1 + "' already exists..."); 
@@ -112,10 +103,10 @@ public class Utility {
 	            .withName(ACTIVITY_2)
 	            .withVersion(ACTIVITY_VERSION)
 	            .withDefaultTaskList(getTaskList())
-	            .withDefaultTaskScheduleToStartTimeout("10")
-	            .withDefaultTaskStartToCloseTimeout("10")
-	            .withDefaultTaskScheduleToCloseTimeout("10")
-	            .withDefaultTaskHeartbeatTimeout("10"));
+	            .withDefaultTaskScheduleToStartTimeout("5")
+	            .withDefaultTaskStartToCloseTimeout("2")
+	            .withDefaultTaskScheduleToCloseTimeout("7")
+	            .withDefaultTaskHeartbeatTimeout("20"));
 	    }
 	    catch (TypeAlreadyExistsException e) {
 			logger.info("Activity Type '" + ACTIVITY_2 + "' already exists..."); 
