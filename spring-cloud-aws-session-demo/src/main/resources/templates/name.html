@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Session Demo - Spring Cloud AWS</title>
+	<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" title="default" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+</head>
+<body> 
+
+	<div class="container" th:if="${simpleForm.name} != null">
+		<div class="jumbotron">
+		  <h3>The Session Says:</h3>
+		  <p>Your name is <span th:text="${simpleForm.name}">name</span>, your hobby is <span th:text="${simpleForm.hobby}">hobby</span></p>
+		</div>
+	</div>
+
+	<div class="container">
+		  <form action="/" class="form-inline" method="post">
+			  <div class="form-group">
+			    <label for="name">What is your name?</label>
+			    <input type="text" class="form-control" name="name" placeholder="type your name here" />
+			  </div>		  
+			  <div class="form-group">
+			    <label for="name">What is your hobby?</label>
+			    <input type="text" class="form-control" name="hobby" placeholder="type your hobby here" />
+			  </div>		  
+			  <div class="form-group">
+				  <button type="submit" class="btn btn-default">Submit</button>	
+			  </div>		  
+		  </form>
+	</div>
+	   
+</body>
+</html>
