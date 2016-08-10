@@ -26,12 +26,12 @@ public class Starter {
 
     public Run start() {
         String workflow_input = "Day after day";
-
         String workflowExecution = UUID.randomUUID().toString();
         
         logger.info("Starting the workflow execution '" + workflowExecution + "' with input '" + workflow_input + "'.");
 
-        Run run = swf.startWorkflowExecution(new StartWorkflowExecutionRequest()
+        Run run = swf.startWorkflowExecution(
+        	new StartWorkflowExecutionRequest()
             .withDomain(Utility.DOMAIN_NAME)
             .withWorkflowType(Utility.getWorkflowType())
             .withWorkflowId(workflowExecution)

@@ -62,15 +62,6 @@ public abstract class Worker {
                         .withResult(result));
 	            }
 
-	        	//	IF FAILURE:
-//	        System.out.println("The activity task failed with the error '"
-//	                        + error.getClass().getSimpleName() + "'.");
-//	                swf.respondActivityTaskFailed(
-//	                    new RespondActivityTaskFailedRequest()
-//	                        .withTaskToken(task_token)
-//	                        .withReason(error.getClass().getSimpleName())
-//	                        .withDetails(error.getMessage()));
-//	            }
 	    }
 	    waitForTermination.countDown();
 	}
