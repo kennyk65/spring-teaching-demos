@@ -4,11 +4,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>spring-cloud-aws-environment-demo</artifactId>
+	<artifactId>spring-cloud-aws-swf-demo</artifactId>
 	<version>1</version>
 	<packaging>war</packaging>
 
-	<name>spring-cloud-aws-environment-demo</name>
+	<name>spring-cloud-aws-swf-demo</name>
 	<description>Spring Cloud AWS - Demo SWF</description>
 
 	<parent>
