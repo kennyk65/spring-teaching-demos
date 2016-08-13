@@ -1,0 +1,48 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>Session Demo - Spring Cloud AWS</title>
+	<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" title="default" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+
+    <!-- Custom styles for this template -->
+    <link href="sticky-footer.css" rel="stylesheet"/>
+</head>
+<body> 
+
+	<div class="container" >
+		<div class="jumbotron">
+		  <h3>How bored are you right now?</h3>
+		  <h6><span th:text="${result}"></span></h6>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row">
+		  <div class="col-sm-4">Highly Interested!</div>
+		  <div class="col-sm-4 text-center">Okay</div>
+		  <div class="col-sm-4 text-right">Ready for Weekend!</div>
+		</div>	 
+	</div>
+
+	<div class="container">
+		  <form action="/" class="form-vertical" method="post">
+			  <div class="form-group">
+				<input type="range" min="0"  max="100" value="50" id="level" name="level" th:attr="value=${level}"/>
+			  </div>		  
+			  <div class="form-group">
+				  <button type="submit" class="btn btn-default">Submit</button>	
+			  </div>		  
+		  </form>
+	</div>
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Code for this example can be found in <a href="https://github.com/kennyk65/spring-teaching-demos/tree/master/spring-cloud-aws-cloudwatch-demo">GitHub</a>.</p>
+      </div>
+    </footer>
+	   
+</body>
+</html>
