@@ -22,11 +22,12 @@ import com.amazonaws.services.simpleworkflow.model.ActivityType;
 import com.amazonaws.services.simpleworkflow.model.CompleteWorkflowExecutionDecisionAttributes;
 import com.amazonaws.services.simpleworkflow.model.Decision;
 import com.amazonaws.services.simpleworkflow.model.DecisionTask;
-import com.amazonaws.services.simpleworkflow.model.DecisionType;
+import static com.amazonaws.services.simpleworkflow.model.DecisionType.*;
 import com.amazonaws.services.simpleworkflow.model.HistoryEvent;
 import com.amazonaws.services.simpleworkflow.model.PollForDecisionTaskRequest;
 import com.amazonaws.services.simpleworkflow.model.RespondDecisionTaskCompletedRequest;
 import com.amazonaws.services.simpleworkflow.model.ScheduleActivityTaskDecisionAttributes;
+import static com.example.wf.Utility.*;
 
 @Component
 public class Decider {
@@ -34,7 +35,7 @@ public class Decider {
 	Logger logger = LoggerFactory.getLogger(Decider.class);
 
 	@Autowired AmazonSimpleWorkflowClient swf;
-    private CountDownLatch waitForTermination = new CountDownLatch(1);
+    private CountDownLatch waitForTermination = new CountDownLatch(1);	//	Used to terminate gracefully.
 	private boolean shutdown = false;
 	
 	/**
@@ -44,22 +45,19 @@ public class Decider {
 	public void pollForDecisions () {
 	    PollForDecisionTaskRequest req =
             new PollForDecisionTaskRequest()
-                .withDomain(Utility.DOMAIN_NAME)
-                .withTaskList(Utility.getTaskList());
+                .withDomain(DOMAIN_NAME)
+                .withTaskList(getTaskList());
 
         while (!shutdown) {
         	logger.info("Polling for a decision task from the tasklist '" +
-                    Utility.TASKLIST + "' in the domain '" +
-                    Utility.DOMAIN_NAME + "'.");
+                    TASKLIST + "' in the domain '" + DOMAIN_NAME + "'.");
 
             DecisionTask task = swf.pollForDecisionTask(req);
 
-            String taskToken = task.getTaskToken();
-            if (taskToken != null) {
+            if (task.getTaskToken() != null) {
                 try {
                     decide(task);
-                }
-                catch (Throwable th) {
+                } catch (Throwable th) {
                     th.printStackTrace();
                 }
             }
@@ -71,71 +69,78 @@ public class Decider {
 
 	
 	/**
-	 * Make decisions.
+	 * Make decisions.  First do step 1, then step 2, then complete.  Easy!
 	 */
 	private void decide(DecisionTask task) throws Throwable {
 
-	    List<Decision> decisions = new ArrayList<Decision>();
-        ScheduleActivityTaskDecisionAttributes attrs = null;
-		
-		String taskToken = task.getTaskToken();
 		List<HistoryEvent> events = task.getEvents();
+		logEventHistory(events);	// Adjust logging level as needed to debug.
 		
-		Utility.logEventHistory(events);
-		
-	    //	Is step 2 complete?  Then signal the completion of the workflow:
-	    if ( isActivityComplete(events, Utility.ACTIVITY_2)) {
+	    //	Is step 2 complete?  Then signal the completion of the workflow.  
+		//	The result of the workflow is whatever was returned from step 2:
+	    if ( isActivityComplete(events, ACTIVITY_2)) {
 	        logger.info("Decision: workflow execution " + task.getWorkflowExecution().getRunId() + " is complete.");
-	        decisions.add(
-	            new Decision()
-	                .withDecisionType(DecisionType.CompleteWorkflowExecution)
-	                .withCompleteWorkflowExecutionDecisionAttributes(
-	                    new CompleteWorkflowExecutionDecisionAttributes()
-	                        .withResult(getActivityResult(events,Utility.ACTIVITY_2))));
-	        returnDecision(decisions, taskToken);
+	        signalWorkflowComplete(task, getActivityResult(task.getEvents(),ACTIVITY_2));
 	        return;
 		} 
 			
-		//	Otherwise, if only step 1 is complete, schedule step 2:
-		if(  isActivityComplete(events, Utility.ACTIVITY_1) ) {
+		//	Otherwise, if only step 1 is complete, schedule step 2.
+	    //	The input for step 2 is the output from step 1:
+		if(  isActivityComplete(events, ACTIVITY_1) ) {
 	        logger.info("Decision: schedule step 2 of execution " + task.getWorkflowExecution().getRunId());
-            attrs = new ScheduleActivityTaskDecisionAttributes()
-                .withActivityId(UUID.randomUUID().toString())
-                .withInput(getActivityResult(events,Utility.ACTIVITY_1))
-                .withActivityType(new ActivityType()
-                    .withName(Utility.ACTIVITY_2)
-                   	.withVersion(Utility.ACTIVITY_VERSION));
-
-            decisions.add(
-                new Decision()
-                    .withDecisionType(DecisionType.ScheduleActivityTask)
-                    .withScheduleActivityTaskDecisionAttributes(attrs));
-            
-	        returnDecision(decisions, taskToken);
+			scheduleStep(task, ACTIVITY_2, ACTIVITY_VERSION, getActivityResult(task.getEvents(),ACTIVITY_1));
 	        return;
 		}
-
 		
-		//	Otherwise, start activity 1:
+		//	Otherwise, start activity 1.
+		//	The input into step one is the original input into the workflow:
         logger.info("Decision: schedule step 1 of execution " + task.getWorkflowExecution().getRunId());
-
-        attrs = new ScheduleActivityTaskDecisionAttributes()
-            .withActivityId(UUID.randomUUID().toString())
-            .withInput(getOriginalWorkflowInput(events))
-            .withActivityType(new ActivityType()
-                .withName(Utility.ACTIVITY_1)
-               	.withVersion(Utility.ACTIVITY_VERSION));
-
-        decisions.add(
-            new Decision()
-                .withDecisionType(DecisionType.ScheduleActivityTask)
-                .withScheduleActivityTaskDecisionAttributes(attrs));
-        
-        returnDecision(decisions, taskToken);
-        return;
+		scheduleStep(task, ACTIVITY_1, ACTIVITY_VERSION, getOriginalWorkflowInput(task.getEvents()));
 	}
 	
 	
+	/**
+	 * Send a decision to SWF that this workflow execution is now complete.
+	 */
+	private void signalWorkflowComplete(DecisionTask task,String output) {
+	    List<Decision> decisions = new ArrayList<Decision>();
+        decisions.add(
+            new Decision()
+                .withDecisionType(CompleteWorkflowExecution)
+                .withCompleteWorkflowExecutionDecisionAttributes(
+                    new CompleteWorkflowExecutionDecisionAttributes()
+                        .withResult(output)));
+        returnDecision(decisions, task.getTaskToken());
+	}
+	
+	
+	/**
+	 *	Send a decision to SWF that it is time to execute the given step / activity.
+	 *	Steps / activities are all pretty much the same except for their names, so it
+	 *	makes sense to have a single function take care of the bulk of the details: 
+	 */
+	private void scheduleStep(DecisionTask task, String activityName, String activityVersion, String input){
+	    List<Decision> decisions = new ArrayList<Decision>();
+        ScheduleActivityTaskDecisionAttributes attrs = null;
+        attrs = new ScheduleActivityTaskDecisionAttributes()
+            .withActivityId(UUID.randomUUID().toString())
+            .withInput(input)
+            .withActivityType(new ActivityType()
+                .withName(activityName)
+               	.withVersion(activityVersion));
+
+        decisions.add(
+            new Decision()
+                .withDecisionType(ScheduleActivityTask)
+                .withScheduleActivityTaskDecisionAttributes(attrs));
+        
+        returnDecision(decisions, task.getTaskToken());
+	}		
+
+	
+	/**
+	 *	Send the given decision to SWF. 
+	 */
 	private void returnDecision(List<Decision> decisions, String taskToken) {
 	    //	RETURN the decision:
 	    swf.respondDecisionTaskCompleted(
@@ -147,6 +152,8 @@ public class Decider {
 	
 	/**
 	 * Examine event history to determine if the given event is complete.
+	 * This is done by seeing if there are any attributes from task completed events.
+	 * If so, the task is done.  If not, the task is not yet complete.
 	 */
 	private boolean isActivityComplete(List<HistoryEvent> events, String type) {
 		ActivityTaskCompletedEventAttributes attrs = 
@@ -173,7 +180,7 @@ public class Decider {
 
 	
 	/**
-	 * Examine event history to obtain and return the seto of attributes associated with the given completed task.
+	 * Examine event history to obtain and return the set of attributes associated with the given completed task.
 	 * If the task is not completed, returns null.
 	 */
 	private ActivityTaskCompletedEventAttributes getActivityTaskCompletedEventAttributes(List<HistoryEvent> events, String type) {
@@ -185,18 +192,24 @@ public class Decider {
 	    	
 	        switch(event.getEventType()) {
             case "ActivityTaskScheduled":
+            	//	Is this a record of the task being scheduled?  Does it match 
+            	//	the event type we are seeking? If so, record the event id:
             	ActivityTaskScheduledEventAttributes scheduledAttrs = event.getActivityTaskScheduledEventAttributes();
             	if ( type.equals(scheduledAttrs.getActivityType().getName())) {
             		scheduledEventId = event.getEventId();
             	}
                 break;
             case "ActivityTaskStarted":
+            	//	Is this a record of the task being started?  Does it match the 
+            	//	scheduled event Id we recorded earlier?  If so, record the event id:
             	ActivityTaskStartedEventAttributes startedAttrs = event.getActivityTaskStartedEventAttributes();
             	if ( startedAttrs.getScheduledEventId().equals(scheduledEventId)) {
             		startedEventId = event.getEventId();
             	}
                 break;
             case "ActivityTaskCompleted":
+            	//	Is this a record of a task being completed?  If so, see if the scheduled and started ids
+            	//	match what we recorded earlier.  If so, this completion event is the one we are looking for:
             	ActivityTaskCompletedEventAttributes completedAttrs = event.getActivityTaskCompletedEventAttributes();
             	if(completedAttrs.getScheduledEventId().equals(scheduledEventId) &&
             		completedAttrs.getStartedEventId().equals(startedEventId) ) {
