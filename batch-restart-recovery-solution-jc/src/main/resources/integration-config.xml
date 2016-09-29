@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/integration/file http://www.springframework.org/schema/integration/file/spring-integration-file.xsd
+		http://www.springframework.org/schema/integration http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<!-- monitor the 'spool' directory in the root of the project for new dining requests CSV files -->
+	<int-file:inbound-channel-adapter id="dinings" 
+									  directory="spool" 
+									  filename-regex=".*\.csv$"/>
+									  
+	<int:poller default="true" fixed-delay="1000"/>
+
+	<int:service-activator input-channel="dinings">
+		<bean class="rewards.batch.DiningRequestsJobLauncher">
+			<constructor-arg ref="jobLauncher"/>
+			<constructor-arg ref="diningRequestsJob"/>
+		</bean>
+	</int:service-activator>
+	
+</beans>

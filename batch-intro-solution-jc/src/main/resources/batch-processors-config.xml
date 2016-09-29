@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:batch.properties"/>
+
+	<bean id="confirmationReader" class="org.springframework.batch.item.jms.JmsItemReader" >
+	    <property name="jmsTemplate" ref="receivingJmsTemplate"/>
+	    <property name="itemType" value="rewards.batch.Confirmation"/>
+	</bean>
+	  
+	<bean id="confirmationUpdater" class="org.springframework.batch.item.database.JdbcBatchItemWriter">
+	    <property name="dataSource" ref="dataSource"/>
+	    <property name="sql" value="update T_DINING set CONFIRMED=1 where ID=?"/>
+	    <property name="itemPreparedStatementSetter" ref="confirmationPreparedStatementPreparer" />
+	</bean>
+	
+	<bean id="confirmationPreparedStatementPreparer" class="rewards.batch.ConfirmationPreparedStatementPreparer"/>
+
+	<bean id="unconfirmedDiningsReader" class="org.springframework.batch.item.database.JdbcPagingItemReader">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="fetchSize" value="${chunk.size}"/>
+		<property name="pageSize" value="${chunk.size}"/>
+		<property name="queryProvider">
+			<bean class="org.springframework.batch.item.database.support.SqlPagingQueryProviderFactoryBean">
+				<property name="dataSource" ref="dataSource"/>
+				<property name="selectClause" value="select *"/>
+				<property name="fromClause" value="from T_DINING"/>
+				<property name="whereClause" value="where CONFIRMED=0"/>
+				<property name="sortKey" value="ID"/>
+			</bean>
+		</property>
+		<property name="rowMapper">
+			<bean class="rewards.batch.DiningMapper"/>
+		</property>
+	</bean>
+	
+	<bean id="requestSender" class="org.springframework.batch.item.jms.JmsItemWriter">
+		<property name="jmsTemplate" ref="sendingJmsTemplate"/>
+	</bean>
+	
+</beans>

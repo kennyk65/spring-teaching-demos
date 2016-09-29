@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- use an embedded HSQLDB instance that persists its state on disk (only supports a single connection) -->
+	<bean id="dataSource" class="org.springframework.jdbc.datasource.SingleConnectionDataSource">
+		<property name="driverClassName" value="org.hsqldb.jdbcDriver"/>
+		<property name="url" value="jdbc:hsqldb:file:rewardsdb;shutdown=true"/>
+		<property name="username" value="sa"/>
+		<property name="suppressClose" value="true"/>
+	</bean>
+	
+	<!-- only run the initializer if we don't have a local DB yet -->
+	<jdbc:initialize-database enabled="#{!new java.io.File('rewardsdb.script').exists()}">
+		<jdbc:script location="classpath:org/springframework/batch/core/schema-hsqldb.sql"/>
+		<jdbc:script location="classpath:db-schema.sql"/>
+		<jdbc:script location="classpath:db-test-data.sql"/>
+	</jdbc:initialize-database>
+
+</beans>
