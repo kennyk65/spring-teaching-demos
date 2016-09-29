@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:property-placeholder location="classpath:batch.properties"/>
+
+	<!-- TODO 21: Define a bean named "confirmationReader" of type JmsItemReader.
+	Inject it with the receivingJmsTemplate, which is already setup to read from the "confirmation.queue"
+	 -->
+	  
+	<!-- TODO 22: Define a bean named "confirmationUpdater" of type JdbcBatchItemWriter.  
+	Set its dataSource property.
+	Set its SQL statement to "update T_DINING set CONFIRMED=1 where ID=?".
+	To control how the parameter is set in the batched update, set the 
+	itemPreparedStatementSetter to reference the "confirmationPreparedStatementPreparer" bean.  
+	See the next step to understand what this bean is doing. 
+	-->
+	
+	<!-- TODO 23: The last step defined a writer to perform efficient batched updates on the database.
+	Batched updates use prepared statements, and prepared statements need to have their parameters
+	set for each statement in the batch.  Examine the SQL statement used in the last step, and
+	compare it with the code in the class defined here.  When you feel you understand how the
+	Confirmation's ID gets set on the update statement, move on to the next step.  -->
+	<bean id="confirmationPreparedStatementPreparer" class="rewards.batch.ConfirmationPreparedStatementPreparer"/>
+
+	<bean id="unconfirmedDiningsReader" class="org.springframework.batch.item.database.JdbcPagingItemReader">
+		<property name="dataSource" ref="dataSource"/>
+		<property name="fetchSize" value="${chunk.size}"/>
+		<property name="pageSize" value="${chunk.size}"/>
+		<!-- TODO 27: inject a properly configured SqlPagingQueryProviderFactoryBean 
+		     for the queryProvider property as an inner bean.
+		     set the properties controlling the SQL statement based on the db-schema.sql file.
+		     For more help see the detailed instructions.  -->
+
+		<!-- TODO 28: inject a DiningMapper for the rowMapper property as an inner bean -->
+
+	</bean>
+	
+	<!-- TODO 30: Create a requestSender bean definition of type JmsItemWriter 
+	Inject it with the sendingJmsTemplate, which is already setup to read from the "dining.queue" -->
+
+	
+</beans>

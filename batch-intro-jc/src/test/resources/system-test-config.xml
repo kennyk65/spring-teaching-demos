@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!--
+		Configuration to support system testing the ccp application.
+	-->
+
+	<import resource="classpath:batch-execution-config.xml" />
+	<import resource="classpath:batch-job-config.xml" />
+	<import resource="classpath:batch-processors-config.xml" />
+	<import resource="classpath:jms-infra-config.xml" />
+	<import resource="classpath:db-config.xml" />
+	<import resource="classpath:jms-ccp-config.xml" />	
+	
+
+ 	<!-- put some test messages on the queue: -->
+	<bean class="rewards.batch.QueuePopulator">
+		<constructor-arg>
+			<bean class="org.springframework.jms.core.JmsTemplate">
+				<property name="connectionFactory" ref="connectionFactory"/>
+				<property name="defaultDestinationName" value="confirmation.queue"/>
+			</bean>
+		</constructor-arg>
+	</bean> 
+
+	<!-- make the dining queue view available for checking in the test: -->
+ 	<bean id="diningQueueView" class="org.springframework.jmx.access.MBeanProxyFactoryBean">
+		<property name="proxyInterface" value="org.apache.activemq.broker.jmx.QueueViewMBean"/>
+		<property name="objectName" value="org.apache.activemq:type=Broker,brokerName=embedded,destinationType=Queue,destinationName=dining.queue"/>
+	</bean>
+	
+	<!-- helps with testing (autowired, injected in the test instance: -->
+ 	<bean class="org.springframework.batch.test.JobLauncherTestUtils" lazy-init="true"/>
+
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSource" />
+	</bean> 
+
+</beans>

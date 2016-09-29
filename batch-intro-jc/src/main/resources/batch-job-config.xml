@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<beans:beans xmlns="http://www.springframework.org/schema/batch"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<!-- TODO 25: Define a batch job with one step.  
+	Within the step, add a tasklet and a chunk.  
+	On the chunk, set the reader to the “confirmationReader” you defined earlier.  
+	Set the writer to the “confirmationUpdater”.  
+	Set the commit-interval to “${chunk.size}”.  
+	Set reader-transactional-queue = true; this will be explained in the next module.
+	-->
+
+
+	<!-- TODO 31: Define a second step for the job. 
+	Set the reader to the “unconfirmedDiningsReader” you modified earlier.  
+	Set the writer to the “requestSender”.  
+	Set the commit-interval to “${chunk.size}”, just as is done in the first step.  
+	Be sure to set the "next" attribute of the first step to the id of the second step. -->
+
+</beans:beans>
