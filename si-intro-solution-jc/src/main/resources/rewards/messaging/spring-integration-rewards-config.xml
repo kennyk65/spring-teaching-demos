@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-mail="http://www.springframework.org/schema/integration/mail"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/mail
+		http://www.springframework.org/schema/integration/mail/spring-integration-mail.xsd
+		http://www.springframework.org/schema/integration
+		http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/jms
+		http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- 
+	Begin the flow with an <int-jms:inbound-gateway>.
+	Obtain JMS messages from "rewards.queue.dining" 
+	and send these out through the dinings channel.
+	Confirmations returned from the confirmations channel 
+	should be sent out to the "rewards.queue.confirmation" queue.
+	-->
+	<int-jms:inbound-gateway request-destination-name="rewards.queue.dining" 
+			default-reply-queue-name="rewards.queue.confirmation" 
+			request-channel="dinings"
+			reply-channel="confirmations"/>
+
+	<!--
+	The dinings direct channel 
+	receives messages from the inbound JMS gateway
+	and sends them to the main dining processing logic.
+	It is equiped with a wiretap to log all input messages.
+	-->
+	<channel id="dinings">
+		<interceptors>
+			<wire-tap channel="loggingChannel"/>
+		</interceptors>
+	</channel>
+	
+	<!-- 
+	Messages on the dinings channel should be used to call
+	the main reward logic.  Resulting confirmations should be placed on 
+	the outbound confirmations channel:
+	 -->
+	<service-activator input-channel="dinings"
+	                   output-channel="confirmations" 
+					   ref="rewardNetwork" />
+					   
+	
+	<!-- 
+	The wiretap sends messages to the loggingChannel / logging-channel-adapter:
+	-->
+	<logging-channel-adapter id="loggingChannel" log-full-message="true"/>
+	
+	<!-- 
+	The confirmations publish-subscribe channel
+	receives messages from the main dining processor handler (service activator)
+	and sends a copy of each message to the mail message creator
+	and the JMS inbound gateway.
+	-->
+	<publish-subscribe-channel id="confirmations"/>
+	
+	<!-- 
+	Turns RewardConfirmations into formatted SMTP compatible email content.
+	-->
+	<beans:bean id="rewardMailMessageCreator" class="rewards.RewardMailMessageCreator">
+		<beans:constructor-arg ref="accountRepository"/>
+	</beans:bean>
+					 
+					 
+	<!--
+	Messages on the confirmations channel should be used to call
+	the createMail method on the rewardMailMessageCreator bean.
+	Formatted output should be placed on the mails channel:
+	-->			              
+	<service-activator input-channel="confirmations" output-channel="mails"
+	                   ref="rewardMailMessageCreator"/>
+	
+	
+	<!-- 
+	Messages on the mails channel 
+	should be sent to the outbound SMTP adapter:
+	-->
+	<int-mail:outbound-channel-adapter id="mails" host="localhost" port="2525"/>
+		
+</beans:beans>

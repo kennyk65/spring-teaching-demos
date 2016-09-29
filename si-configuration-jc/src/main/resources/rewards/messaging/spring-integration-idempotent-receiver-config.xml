@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:int="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration
+            http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+
+	<!-- TODO 28:	Change this to a QueueChannel.
+	Re-run the 'invalid dinings' test. It should pass now. 	-->
+	<int:channel id="dinings">
+	</int:channel>
+
+		<!-- TODO 26:	Within the chain, before both service activators, add a Filter.
+		The filter should reject any Dining object having null fields.
+		You can use a SpEL expression to do this validation.
+		Re-run the 'invalid dinings' test, it should pass. -->
+		
+		<!-- TODO 27:	Set the throw-exception-on-rejection attribute of the Filter to true.
+		Re-run the last test, it should fail. -->
+
+		<!-- TODO 23:	Within the chain, before the rewardNetwork service activator, 
+		add another service activator which calls alreadyRewardedConfirmer.
+		Re-run the 'idempotence' test, it should pass. 
+		(Be sure to do the next steps in numeric order)	-->
+
+		<!-- TODO 22:	Wrap the rewardNetwork service activator within a chain.  
+		Adjust input and output channel settings. -->
+					
+		<int:service-activator ref="rewardNetwork"
+			method="rewardAccountFor" 
+			input-channel="dinings" 
+			output-channel="confirmations"						
+			/>
+
+	<bean id="alreadyRewardedConfirmer" class="rewards.messaging.AlreadyRewardedConfirmer">
+		<constructor-arg ref="rewardRepository" />
+		<constructor-arg ref="confirmationProcessor" />
+	</bean>
+
+	<int:gateway service-interface="rewards.messaging.ConfirmationProcessor"
+		id="confirmationProcessor" default-request-channel="confirmations" />
+
+	<int:channel id="confirmations">
+		<int:queue capacity="10" />
+	</int:channel>
+
+	<!-- Redefine the errorChannel to ignore errors since the logging-channel-adapter 
+		handles them. Using the default errorChannel generates an unwanted stack-trace. -->
+	<!-- TODO 32: Once all tests are running OK, uncomment this line for nicer output. -->
+<!-- 	
+	<int:publish-subscribe-channel id="errorChannel"
+		ignore-failures="true" /> 
+-->
+
+	<int:logging-channel-adapter channel="errorChannel"
+		expression="'filter rejected message with ' + payload.failedMessage.payload"
+		level="WARN" />
+</beans>

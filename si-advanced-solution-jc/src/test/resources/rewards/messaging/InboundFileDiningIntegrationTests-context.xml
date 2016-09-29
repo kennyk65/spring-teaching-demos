@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-file="http://www.springframework.org/schema/integration/file"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration/file
+            http://www.springframework.org/schema/integration/file/spring-integration-file.xsd">
+
+	<import resource="spring-integration-idempotent-receiver-config.xml" />
+	<import resource="spring-integration-infrastructure-config.xml" />
+	<import resource="spring-integration-marshalling-config.xml" />
+	<import resource="spring-integration-xml-splitting-config.xml" />
+	<import resource="classpath:system-test-config.xml" />
+
+	<!-- TODO 32:	Add an inbound File Channel Adapter.
+					Specify the directory as a relative path to the location of the 
+					dining-sample.xml and dinings-sample.xml files.
+					Use a filename pattern to include only these two files.
+					The channel of the output messages should be mixedXmlDinings.
+					Re-run the previous test, it should pass.
+	 -->
+	<int-file:inbound-channel-adapter 
+		directory="src/test/resources/rewards/messaging"
+		filename-pattern="dining*.xml"
+		channel="mixedXmlDinings" />
+
+</beans>

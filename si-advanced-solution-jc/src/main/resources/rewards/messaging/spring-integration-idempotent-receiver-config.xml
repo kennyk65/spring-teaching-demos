@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:int="http://www.springframework.org/schema/integration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration
+            http://www.springframework.org/schema/integration/spring-integration.xsd">
+
+	<int:channel id="dinings">
+		<int:dispatcher load-balancer="none"/>
+	</int:channel>
+
+	<int:service-activator input-channel="dinings" output-channel="confirmations" order="0"
+						  ref="rewardRepository" method="findConfirmationFor" requires-reply="true"/>
+	<int:service-activator input-channel="dinings" output-channel="confirmations" order="1"
+	                      ref="rewardNetwork" method="rewardAccountFor" />
+
+	<int:channel id="confirmations">
+		<int:queue capacity="10" />
+	</int:channel>
+
+</beans>

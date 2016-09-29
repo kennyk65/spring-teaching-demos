@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns="http://www.springframework.org/schema/integration"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-mail="http://www.springframework.org/schema/integration/mail"
+	xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+	xsi:schemaLocation="http://www.springframework.org/schema/integration/mail
+		http://www.springframework.org/schema/integration/mail/spring-integration-mail.xsd
+		http://www.springframework.org/schema/integration
+		http://www.springframework.org/schema/integration/spring-integration.xsd
+		http://www.springframework.org/schema/integration/jms
+		http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd
+		http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+
+	<!-- TODO 22: Define an <int-jms:inbound-gateway> element. 
+		Set the request-destination-name and default-reply-queue-name 
+		based on values used in jms-rewards-config.xml.
+		Set the request-channel property = "dinings".
+		Rename jms-rewards-config.xml to 'jms-rewards-config.xml.old' when done.	
+	-->
+
+
+	<!-- TODO 23: Define a direct channel called 'dinings'.  
+		This will connect the inbound gateway to a service activator. 
+	-->
+
+	
+	<!-- TODO 24: Define a service-activator.  It should call the rewardNetwork 
+		for messages on the 'dinings' channel.  Do not specify a reply channel; 
+		the default reply channel (dinings) will be used automatically.
+		Re-run DiningProcessorTests.  It should still pass.
+	 -->
+
+					   
+	<!-- TODO 25: Add a <wire-tap> to the dinings channel.  
+		The wire-tap should send messages to the 'loggingChannel'. 
+	-->
+	
+	<!-- TODO 26: Define a logging-channel-adapter.  It should 
+		log full messages from the 'loggingChannel'. 
+		Re-run DiningProcessorTests.  It should still pass, 
+		and you should see output in the console.
+	-->
+	
+	<!-- TODO 27: Define a publish-subscribe channel called 'confirmations' to act as a reply channel.
+		Modify the inbound gateway to use this channel as the reply-channel.
+		Modify the service activator to use this channel as the output-channel.	
+		Re-run DiningProcessorTests.  It should still pass.
+	-->
+	
+	<!-- TODO 28: Define a Spring bean with id = 'rewardMailMessageCreator' 
+		and class = rewards.RewardMailMessageCreator.
+	-->
+					 
+					 
+	<!-- TODO 29: Define another service-activator.  It should take messages from the 
+		'confirmations' channel, call a method on the rewardMailMessageCreator bean,
+		and put output on a channel called 'mails'.  Add a 'mails' channel as well.
+	-->
+	
+	
+	<!-- TODO 30: Define a <int-mail:outbound-channel-adapter> that sends 
+		messages as SMTP mail to localhost and port 2525 -->
+		
+</beans:beans>

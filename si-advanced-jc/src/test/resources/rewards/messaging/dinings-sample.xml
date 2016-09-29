@@ -1,0 +1,20 @@
+<dinings>
+	<dining transaction-id="universallyUniqueString1">
+		<amount value="10.5" />
+		<creditcard number="1234123412340003" />
+		<merchant number="1234567890" />
+		<timestamp>
+			<date>2009-04-21</date>
+			<time>09:00:00</time>
+		</timestamp>
+	</dining>
+	<dining transaction-id="universallyUniqueString2">
+		<amount value="10.5" />
+		<creditcard number="1234123412340003" />
+		<merchant number="1234567890" />
+		<timestamp>
+			<date>2009-04-21</date>
+			<time>09:00:00</time>
+		</timestamp>
+	</dining>
+</dinings>

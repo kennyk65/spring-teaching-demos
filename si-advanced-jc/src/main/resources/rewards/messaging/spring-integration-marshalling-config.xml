@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:int="http://www.springframework.org/schema/integration" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:int-xml="http://www.springframework.org/schema/integration/xml"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans.xsd
+            http://www.springframework.org/schema/integration
+            http://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/xml
+            http://www.springframework.org/schema/integration/xml/spring-integration-xml.xsd">
+
+
+	<int:channel id="xmlDinings" />
+
+	<!-- TODO 22:	Replace this bridge with an unmarshalling transformer
+					that unmarshalls XML Dining documents into Dining objects.
+					The existing diningRequestUnmarshaller can be used for unmarshalling.
+					Re-run the previous test, it should pass. -->
+	<int:bridge input-channel="xmlDinings" output-channel="dinings"/>
+
+	<bean id="diningRequestUnmarshaller" class="rewards.messaging.DiningRequestUnmarshaller" />
+
+	<!-- TODO 24:	Replace this bridge with a marshalling transformer.
+					that marshalls RewardConfirmation objects into XML documents.
+					The existing rewardConfirmationMarshaller can be used as the marshaller.
+					Re-run the previous test, it should pass. -->
+	<int:bridge input-channel="confirmations" output-channel="xmlConfirmations"/>
+
+	<bean id="rewardConfirmationMarshaller" class="rewards.messaging.RewardConfirmationMarshaller"/>
+
+	<bean id="resultToStringTransformer"
+		  class="org.springframework.integration.xml.transformer.ResultToStringTransformer" />
+
+	<int:channel id="xmlConfirmations">
+		<int:queue capacity="10" />
+	</int:channel>
+
+</beans>

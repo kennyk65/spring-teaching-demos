@@ -32,5 +32,4 @@ public class Config {
 	public BeanPostProcessor bpp() {
 		return new BPP();
 	}
-
 }
