@@ -1,5 +1,9 @@
 package com.example;
 
+import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.aws.core.region.RegionProvider;
 import org.springframework.stereotype.Service;
 
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient;
@@ -12,7 +16,14 @@ import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 @Service
 public class MonitoringService {
 
-	private AmazonCloudWatchAsyncClient cloudWatch = new AmazonCloudWatchAsyncClient();
+	private AmazonCloudWatchAsyncClient cloudWatch;
+	@Autowired RegionProvider regionProvider;
+	
+	@PostConstruct
+	public void init() {
+		cloudWatch = new AmazonCloudWatchAsyncClient();
+		cloudWatch.setRegion(regionProvider.getRegion());
+	}
 	
 	/**
 	 * Log the current level of student Boredom.  
@@ -30,5 +41,6 @@ public class MonitoringService {
 					.withValue(new Double(level)));
 		
 		cloudWatch.putMetricDataAsync(request);	// Yup, it's async!
+		
 	}
 }
