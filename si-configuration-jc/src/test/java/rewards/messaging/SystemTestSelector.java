@@ -11,15 +11,15 @@ import rewards.TestContextConfig;
 //	TODO 00:  This lab can be completed using either Java Configuration or XML configuration.
 //	To follow the JavaConfiguration steps, begin with step 01.
 //	To follow the XML steps instead, comment out the @Import lines below, 
-//	UNcomment the @ImporResource lines, and begin with step 21.
+//	UNcomment the @ImportResource lines, and begin with step 21.
 
 @Import({ 
-//	TestContextConfig.class,
+	TestContextConfig.class,
 })
 
-@ImportResource(locations={
-		"/rewards/messaging/test-context.xml",
-})
+//@ImportResource(locations={
+//		"/rewards/messaging/test-context.xml",
+//})
 
 
 public class SystemTestSelector {
