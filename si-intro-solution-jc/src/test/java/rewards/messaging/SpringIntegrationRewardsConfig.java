@@ -14,6 +14,7 @@ import org.springframework.integration.dsl.channel.MessageChannels;
 import org.springframework.integration.dsl.jms.Jms;
 import org.springframework.integration.dsl.mail.Mail;
 import org.springframework.integration.handler.LoggingHandler;
+import org.springframework.integration.handler.ServiceActivatingHandler;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessageHandler;
 
@@ -100,7 +101,7 @@ public class SpringIntegrationRewardsConfig {
 	public MessageChannel loggingChannel() {
 		return MessageChannels.direct().get();
 	}
-	
+
 	//	Logging flow:
 	//	messages received on the loggingChannel 
 	//	are sent to the logger outbound logging adapter.

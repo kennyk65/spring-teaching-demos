@@ -14,14 +14,18 @@
 	/>
 	
 	<channel id="input">
+		<int:queue/>
 	</channel>
 
 	
 	<!-- Convert input to upper case: -->
 	<service-activator 
+		id="hithere"
 		input-channel="input" 
 		expression="payload.toUpperCase()" >
 	</service-activator>
+
+	<int:poller default="true" fixed-delay="100"/>
 
 
 		

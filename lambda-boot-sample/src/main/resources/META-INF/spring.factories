@@ -1,0 +1,4 @@
+# Extend Spring Boot's AutoConfiguration with some extra classes:
+# Auto Configure
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+org.springframework.cloud.serverless.aws.AwsAutoConfiguration
