@@ -45,9 +45,8 @@ public class DataTransformer {
     public static final String[] ATTRS = { "genericDrugName", "adverseReaction" };
 
     // STUDENT TODO: Update input bucket name to a unique bucket name.
-    public static final String INPUT_BUCKET_NAME = "input-someuniquename-123-kk";
-
     // STUDENT TODO: Update output bucket name to a unique bucket name.
+    public static final String INPUT_BUCKET_NAME = "input-someuniquename-123-kk";
     public static final String OUTPUT_BUCKET_NAME = "output-someuniquename-123-kk";
 
     public static final String JSON_COMMENT = "\"comment\": \"DataTransformer JSON\",";

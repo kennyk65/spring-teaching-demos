@@ -2,6 +2,8 @@ package com.example;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.aws.core.region.RegionProvider;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 @Service
 public class MonitoringService {
 
+    private Log log = LogFactory.getLog(MonitoringService.class);
 	private AmazonCloudWatchAsyncClient cloudWatch;
 	@Autowired RegionProvider regionProvider;
 	
@@ -42,5 +45,7 @@ public class MonitoringService {
 		
 		cloudWatch.putMetricDataAsync(request);	// Yup, it's async!
 		
+		//	Or use cloudwatch logs:
+		log.info("Boredom Level: " + level);
 	}
 }
