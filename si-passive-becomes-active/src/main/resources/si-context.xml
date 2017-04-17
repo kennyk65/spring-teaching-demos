@@ -14,7 +14,6 @@
 	/>
 	
 	<channel id="input">
-		<int:queue/>
 	</channel>
 
 	
@@ -24,9 +23,6 @@
 		input-channel="input" 
 		expression="payload.toUpperCase()" >
 	</service-activator>
-
-	<int:poller default="true" fixed-delay="100"/>
-
 
 		
 	<!-- 
