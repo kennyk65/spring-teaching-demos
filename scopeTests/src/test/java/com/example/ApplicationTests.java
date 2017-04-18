@@ -30,6 +30,7 @@ public class ApplicationTests {
 			//	the prototype:
 			double val2 = single.getValue();
 			assertNotEquals(val, val2);
+			val = val2;
 		}
 	}
 	
@@ -43,6 +44,7 @@ public class ApplicationTests {
 			//	the prototype:
 			double val2 = single.getValue2();
 			assertNotEquals(val, val2);
+			val = val2;
 		}
 	}
 	
@@ -57,6 +59,7 @@ public class ApplicationTests {
 			//	the prototype:
 			double val2 = single.getValue3();
 			assertNotEquals(val, val2);
+			val = val2;
 		}
 	}
 	
@@ -70,6 +73,7 @@ public class ApplicationTests {
 			//	@Lookup method:
 			double val2 = single2.getValue();
 			assertNotEquals(val, val2);
+			val = val2;
 		}
 	}
 	
