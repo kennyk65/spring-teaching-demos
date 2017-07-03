@@ -24,6 +24,7 @@
 		expression="payload.toUpperCase()" >
 	</service-activator>
 
+
 		
 	<!-- 
 	Demo:

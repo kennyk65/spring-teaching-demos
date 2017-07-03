@@ -6,11 +6,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.channel.QueueChannel;
 import org.springframework.integration.config.EnableIntegration;
+import org.springframework.integration.config.ServiceActivatorFactoryBean;
 import org.springframework.integration.dsl.IntegrationFlow;
 import org.springframework.integration.dsl.IntegrationFlows;
 import org.springframework.integration.dsl.channel.MessageChannels;
+import org.springframework.integration.dsl.support.GenericHandler;
 import org.springframework.integration.handler.LoggingHandler;
+import org.springframework.integration.handler.ServiceActivatingHandler;
 import org.springframework.messaging.MessageChannel;
+
 import rewards.internal.reward.RewardRepository;
 import rewards.messaging.AlreadyRewardedConfirmer;
 import rewards.messaging.ConfirmationProcessor;
