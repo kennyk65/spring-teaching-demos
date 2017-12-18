@@ -136,8 +136,8 @@
  				<repository>spring-demo</repository>
 			    <tag>${project.version}</tag>
 			    <buildArgs>
-<!-- 			      <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
- -->			    </buildArgs>
+ 			      <JAR_FILE>${project.build.finalName}.jar</JAR_FILE>
+			    </buildArgs>
 			  </configuration>
 			  <!-- This dependency is needed to keep the plugin from blowing up with java 9. -->
                 <dependencies>
