@@ -4,10 +4,27 @@ spring.security.oauth2.client.registration:
     # Google OAuth 2 client app can be setup at https://console.developers.google.com/apis/credentials            
     clientId: 1034653135442-j27ijg9om55p2ascg1gurbj3sp46iuek.apps.googleusercontent.com
     clientSecret: kmcGAl5meGxwwUdvHnnmv_Se
+    
   github:
     # GitHub OAuth 2 client app can be setup at https://github.com/settings/developers            
     clientId: e0737f257e60beee40e6
     clientSecret: 5429b3fba0e197e576d5e64bcbb4661b3bc48312
+    
+  myauthserver:
+    # My home-made auth server
+    clientId: theOneAndOnlyClient
+    clientSecret: DoNotTellAnyone
+    clientName: myauthserver
+    authorizationGrantType: authorization_code
+    redirectUriTemplate: http://localhost:8080/login/oauth2/code/myauthserver   # Wild Guess
+    scope: user																	# Wild Guess
+
+spring.security.oauth2.client.provider.myauthserver:
+  tokenUri: http://localhost:8050/authserver/oauth/token
+  authorizationUri: http://localhost:8050/authserver/oauth/authorize
+  userInfoUri: http://localhost:8050/authserver/user			# Wild Guess
+
+
 
 #spring.security.oauth2.client.registration.ourauthserver.clientId: 233668646673605
 #spring.security.oauth2.client.registration.ourauthserver.clientSecret: 33b17e044ee6a4fa383f46ec6e28ea1d
