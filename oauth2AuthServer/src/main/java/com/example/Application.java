@@ -1,18 +1,29 @@
 package com.example;
 
+import java.security.Principal;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @SpringBootApplication
-@EnableAuthorizationServer		//	We are now an OAuth 2 Authorization Server
 public class Application {
-
+	   private static final Log logger = LogFactory.getLog(Application.class);
+	   
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
 	}
 	
-	
+	   @RequestMapping("/user")
+	   public Principal user(Principal user) {
+	      logger.info("AS /user has been called");
+	      logger.debug("user info: "+user.toString());
+	      return user;
+	   }
+	   
+	   
     /**
      *	Make this app an OAuth 2 Authorization Server. 
      */

@@ -17,12 +17,13 @@ spring.security.oauth2.client.registration:
     clientName: myauthserver
     authorizationGrantType: authorization_code
     redirectUriTemplate: http://localhost:8080/login/oauth2/code/myauthserver   # Wild Guess
-    scope: user																	# Wild Guess
+    scope: user																# Wild Guess.  "user" works but fails later
 
 spring.security.oauth2.client.provider.myauthserver:
   tokenUri: http://localhost:8050/authserver/oauth/token
   authorizationUri: http://localhost:8050/authserver/oauth/authorize
   userInfoUri: http://localhost:8050/authserver/user			# Wild Guess
+  userNameAttribute: name										# Wild Guess
 
 
 
