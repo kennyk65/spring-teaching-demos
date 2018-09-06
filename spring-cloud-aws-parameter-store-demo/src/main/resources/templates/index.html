@@ -16,10 +16,8 @@
 		<div class="jumbotron">
 		  <h3>Keys / Values Stored in AWS Parameter Store</h3>
 		  <h6>These are the key / values stored under 
-		  <span th:text="${prefix}"></span>/
-		  <span th:text="${name}"></span> and 
-		  <span th:text="${prefix}"></span>/
-		  <span th:text="${defaultContext}"></span>.  
+		  <span th:text="${prefix}"></span>/<span th:text="${name}"></span> and 
+		  <span th:text="${prefix}"></span>/<span th:text="${defaultContext}"></span>.  
 		  Values stored under the former override the latter.
 		  </h6>
 		</div>
@@ -27,10 +25,11 @@
 
 	<div class="container">
 		<div class="row">
-		  <div class="col-sm-4">Property Key</div>
-		  <div class="col-sm-4 text-center">Property Value</div>
-		  <div class="col-sm-4 text-right">Default Property Value (if any)</div>
+		  <div class="col-sm-4"><u>Property Key</u></div>
+		  <div class="col-sm-4 text-center"><u>Property Value</u></div>
+		  <div class="col-sm-4 text-right"><u>Default Property Value (if any)</u></div>
 		</div>	 
+		<p/>	 
 		<div class="row" th:each="prop: ${properties}">
 		  <div class="col-sm-4" th:text="${prop.name}">Property Key</div>
 		  <div class="col-sm-4 text-center" th:text="${prop.value}">Property Value</div>
@@ -43,7 +42,7 @@
 
     <footer class="footer">
       <div class="container">
-        <p class="text-muted">Code for this example can be found in <a href="https://github.com/kennyk65/spring-teaching-demos/tree/master/spring-cloud-aws-cloudwatch-demo">GitHub</a>.</p>
+        <p class="text-muted">Code for this example can be found in <a href="https://github.com/kennyk65/spring-teaching-demos/tree/master/spring-cloud-aws-parameter-store-demo">GitHub</a>.</p>
       </div>
     </footer>
 	   
