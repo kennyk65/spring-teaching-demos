@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<title>AWS Parameter Demo - Spring Cloud AWS</title>
+	<link rel="stylesheet" href="css/screen.css" type="text/css" media="screen" title="default" />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"/>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous"/>
+
+    <!-- Custom styles for this template -->
+    <link href="sticky-footer.css" rel="stylesheet"/>
+</head>
+<body> 
+
+	<div class="container" >
+		<div class="jumbotron">
+		  <h3>Keys / Values Stored in AWS Parameter Store</h3>
+		  <h6>These are the key / values stored under 
+		  <span th:text="${prefix}"></span>/
+		  <span th:text="${name}"></span> and 
+		  <span th:text="${prefix}"></span>/
+		  <span th:text="${defaultContext}"></span>.  
+		  Values stored under the former override the latter.
+		  </h6>
+		</div>
+	</div>
+
+	<div class="container">
+		<div class="row">
+		  <div class="col-sm-4">Property Key</div>
+		  <div class="col-sm-4 text-center">Property Value</div>
+		  <div class="col-sm-4 text-right">Default Property Value (if any)</div>
+		</div>	 
+		<div class="row" th:each="prop: ${properties}">
+		  <div class="col-sm-4" th:text="${prop.name}">Property Key</div>
+		  <div class="col-sm-4 text-center" th:text="${prop.value}">Property Value</div>
+		  <div class="col-sm-4 text-right" th:text="${prop.defaultValue}">Default Property Value</div>
+		</div>	 
+		
+		
+	</div>
+
+
+    <footer class="footer">
+      <div class="container">
+        <p class="text-muted">Code for this example can be found in <a href="https://github.com/kennyk65/spring-teaching-demos/tree/master/spring-cloud-aws-cloudwatch-demo">GitHub</a>.</p>
+      </div>
+    </footer>
+	   
+</body>
+</html>

@@ -1,0 +1,7 @@
+---
+spring.application.name: my-application
+
+aws.paramstore:
+  prefix: /properties	      # The default is "/config"
+  name: my-demo			        # The default is whatever is in spring.application.name
+  default-context: default	# The default is "application"
