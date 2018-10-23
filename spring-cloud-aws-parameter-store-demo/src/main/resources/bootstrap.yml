@@ -1,7 +1,13 @@
 ---
 spring.application.name: my-application
 
+# The code will automatically pick up properties under:
+#   <prefix>/<name>/*
+#   <prefix>/<default-context>/* 
+# ...where the former values override the latter.
+# It's not really practical to override these values externally, so what you set here goes.
+
 aws.paramstore:
-  prefix: /properties	      # The default is "/config"
-  name: my-demo			        # The default is whatever is in spring.application.name
-  default-context: default	# The default is "application"
+  name: my-demo             # The default is whatever is in spring.application.name
+  prefix: /properties	      # The default is "/config".  So anything under <prefix>/<name>/* will get picked up.
+  default-context: default	# The default is "application".  <prefix>/<default-context>/* will get picked up.
