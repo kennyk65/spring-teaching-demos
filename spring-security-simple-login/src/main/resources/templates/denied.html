@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html 
+     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" href="/resources/styles/bootstrap/3.3.5/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/resources/styles/bootstrap/3.3.5/css/bootstrap-theme.min.css" />
+    <title>Spring Security - Simple Login Example - Access Denied</title>
+</head>
+
+<body>
+
+	<div class="container">
+		
+		<div class="row">
+			
+			<h1>Access Denied</h1>
+
+			<p>Sorry, Access Denied</p>
+			<p><a href="/" class="btn btn-link">Return to Home Page</a></p>
+			<div>
+				{{#principal}}
+					<form action="/logout" method="post" class="form-horizontal">
+						<input type="submit" value="Logout" class="btn btn-link" />
+						<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+						({{principal.username}})
+					</form>
+				{{/principal}}
+			</div>	
+		
+		</div>
+		
+		
+	</div>
+
+</body>
+
+</html>
