@@ -27,6 +27,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http
 		.formLogin()
 			.loginPage("/login").permitAll()			//	Login page accessible to all.
+			.defaultSuccessUrl("/secured/default")
 			.and()
 		.exceptionHandling()
 			.accessDeniedPage("/denied")				//	General authorization error page.

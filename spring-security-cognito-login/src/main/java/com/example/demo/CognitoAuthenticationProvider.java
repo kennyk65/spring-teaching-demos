@@ -16,6 +16,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
@@ -23,6 +24,7 @@ import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
 import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
 import com.amazonaws.services.cognitoidp.model.AuthFlowType;
+import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
 
 /**
  * A Spring Security AuthentictionProvider based on an AWS Cognito User Pool.
@@ -72,15 +74,26 @@ public class CognitoAuthenticationProvider implements AuthenticationProvider {
 		AWSCognitoIdentityProvider identityProvider = 
 				AWSCognitoIdentityProviderClientBuilder.standard().build();
 			
-		//	Make the login request to Cognito:
-		AdminInitiateAuthResult result = 
-			identityProvider.adminInitiateAuth(
-				new AdminInitiateAuthRequest()
-					.withUserPoolId(poolId)
-					.withClientId(clientId)
-					.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)	// This flow is essentially "login with username and password"
-					.withAuthParameters(params)				
-			);
+		//	Make the login request to Cognito.  AWS documentation says this 
+		//	requires "admin credentials", but this is incorrect; one only needs cognito permissions:
+		AdminInitiateAuthResult result = null;
+		try {
+			result = 
+					identityProvider.adminInitiateAuth(
+						new AdminInitiateAuthRequest()
+							.withUserPoolId(poolId)
+							.withClientId(clientId)
+							.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)	// This flow is essentially "login with username and password"
+//							.withAuthFlow(AuthFlowType.USER_PASSWORD_AUTH)	// Amazingly, this does not mean "login with username and password"
+							.withAuthParameters(params)				
+					);
+		} catch(UserNotFoundException notfound) {
+			//	If we get a user not found error from AWS Cognito, translate this into a Spring Security user not found error.
+			//	this will allow the framework to handle the situation gently (take us back to the login page) 
+			//	rather than an unknown general error:
+			throw new UsernameNotFoundException(notfound.getErrorMessage(),notfound);
+		}
+		
 		
 		//	Let's ignore new password stuff for now:
 		if(result.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {

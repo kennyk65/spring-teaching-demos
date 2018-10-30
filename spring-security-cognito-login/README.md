@@ -8,7 +8,7 @@ AWS Cognito is used to provide a "User Pool", which is a store of all applicatio
 The security configuration in SecurityConfig.java is reasonably simple.  Anyone can reach the landing page (index.html) or the login page (login.html), but one must be authenticated to reach any "secured" URL like "secured/aSecuredPage.html".  /logoff is used to log out.  All authentication questions
 are turned over to the CognitoAuthenticationProvider to interface with AWS Cognito.
 
-Working with AWS Cognito is very complex and there are lots of options / possibilities.  This demo attempts to keep things simple by only using a basic User Pool with a very basic "authentication flow".
+Working with AWS Cognito is very complex and there are lots of options / possibilities.  This demo attempts to keep things simple by only using a basic User Pool with a very basic "authentication flow".  The flow is described by something called an "app client" or a "user pool client" depending on where you are reading in the documentation.  It describes the application which interacts with the user pool, in our case our Spring Boot app.
 
 Some basic integration tests are provided to ensure that unauthenticated access to secured resources results in a trip to the login page, and authenticated access is uneventful.
 

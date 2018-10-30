@@ -25,6 +25,19 @@
 			<h1>A secured web page</h1>
 		</div>
 
+		<div class="row">
+			{{#principal}}
+			<div>
+				<form action="/logout" method="post" class="form-horizontal">
+					<input type="submit" value="Logout" class="btn btn-link" />
+					<input type="hidden" name="_csrf" value="{{_csrf.token}}" />
+					({{principal}})
+				</form>
+			</div>
+			{{/principal}}
+		</div>
+
+
 	</div>
 
 </body>

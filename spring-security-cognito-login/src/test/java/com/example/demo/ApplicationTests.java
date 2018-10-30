@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -22,24 +23,74 @@ public class ApplicationTests {
 
 	@Autowired MockMvc mock;
 	
+	/**
+	 *  Any attempt to access a secured page should result in a redirect to the login page:
+	 */
 	@Test
-	public void loginRedirect() throws Exception {
+	public void notLoggedInYet() throws Exception {
 
-		//	Any attempt to access a secured page should result in a redirect to the login page:
 		mock.perform( 
 			get("/secured/anything") )
 			.andExpect(redirectedUrl("http://localhost/login"));
 	}
 
+	
+	/**
+	 *  We expect if you try to login with bad credentials, you are simply put back on the login page with a message.
+	 *  
+	 *  Note that this test will actually interact with AWS Cognito via our CognitoAuthenticationProvider.
+	 */
 	@Test
-	@WithMockUser(username="robert",password="robert")
+	public void invalidLoginAttempt() throws Exception {
+		
+		mock.perform(
+			post("/login")
+			.with(csrf())				//	Required for form processing in Spring Security as a way to address CSRF attacks.
+			.param("username", "bogus")
+			.param("password", "incorrect")
+		)
+			.andExpect(redirectedUrl("/login?error"));
+		;
+		
+	}
+	
+	
+	/**
+	 *  Valid credentials should result in the user reaching the default page in lieu of anywhere else to go.
+	 *  
+	 *  Note that this test will actually interact with AWS Cognito via our CognitoAuthenticationProvider.
+	 */
+	@Test
+	public void validLoginAttempt() throws Exception {
+		
+		mock.perform(
+			post("/login")
+			.with(csrf())					//	Required for form processing in Spring Security as a way to address CSRF attacks.
+			.param("username", "robert")	//	This assumes the Cognito user pool has been populated with this user.
+			.param("password", "robert")
+		)
+		.andExpect(status().is3xxRedirection())
+		.andExpect(redirectedUrl("/secured/default"))
+		;
+		
+	}
+	
+	
+	/**
+	 *  If we attempt to access a secured page with valid credentials, we should be successful.
+	 *  
+	 *  Note that this does not actually authenticate with Cognito.  It only provides 
+	 *  Spring Security with an AuthenticationToken that looks legit.  So it tests our
+	 *  security mappings, but it doesn't test interaction with AWS.
+	 */
+	@Test
+	@WithMockUser(username="robert",password="robert")  
 	public void authenticatedOk() throws Exception {
 
-		//	If we attempt to access a secured page with valid credentials, we should be successful:
 		mock.perform( 
-			get("/secured/aSecuredPage") )
+			get("/secured/target") )
 			.andExpect(status().isOk())
-			.andExpect(view().name("aSecuredPage"));
+			.andExpect(view().name("secured/target"));
 	}
 
 	

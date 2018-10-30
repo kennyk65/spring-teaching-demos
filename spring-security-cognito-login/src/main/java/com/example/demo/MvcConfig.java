@@ -33,7 +33,8 @@ public class MvcConfig implements WebMvcConfigurer {
 		registry.addViewController("/index");
 		registry.addViewController("/login");
 		registry.addViewController("/denied");
-		registry.addViewController("/secured/aSecuredPage").setViewName("aSecuredPage");
+		registry.addViewController("/secured/default");
+		registry.addViewController("/secured/target");
 	}
 
 	/**
