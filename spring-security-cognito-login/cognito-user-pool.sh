@@ -18,6 +18,7 @@ echo The user pool client secret is: $COGNITO_USER_POOL_CLIENT_SECRET
 
 aws cognito-idp admin-create-user --user-pool-id $COGNITO_USER_POOL_ID --username robert --temporary-password robert
 
+java -Dserver.port=80 -DCOGNITO.POOL.ID=$COGNITO_USER_POOL_ID -DCOGNITO.CLIENT.ID=$COGNITO_USER_POOL_CLIENT_ID -DCOGNITO.CLIENT.SECRET=$COGNITO_USER_POOL_CLIENT_SECRET -jar target/spring-security-cognito-login-1.jar 
 # Cleaning up:
 #echo Removing cognito user pool $COGNITO_USER_POOL_ID
 #aws cognito-idp delete-user-pool --user-pool-id $COGNITO_USER_POOL_ID

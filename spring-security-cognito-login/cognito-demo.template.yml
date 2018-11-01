@@ -1,0 +1,172 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+
+# This runs an EC2 instance in a VPC with a Spring Boot application on it.
+# The user data will Setup Cognito User Pool, Client App, and a sample user.
+# (There are several obstacles to doing the above using CloudFormation, ugh.)
+# The app will use info on the user pool, client, etc. to back the login function.
+
+Metadata: 
+  AWS::CloudFormation::Interface: 
+    ParameterGroups: 
+      - Label: 
+          default: "Please supply the following"
+        Parameters: 
+          - VPC
+          - PublicSubnet
+          - PrivateKeyName
+
+Parameters:
+  PrivateKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: The name of the private key file to use for SSH/RDP access to the instance, if needed.
+
+  VPC:
+    Type: AWS::EC2::VPC::Id
+    Description: Select a VPC, one with public subnets
+
+  PublicSubnet:
+    Type: AWS::EC2::Subnet::Id
+    Description: Select a public subnet in your selected VPC.  The web server will run here.
+
+
+Mappings:
+  #  This is just the Amazon Linux 2 AMI.  These values change every few months:  
+  AmazonLinuxAMI:
+    us-east-1: 
+      AMI: ami-04681a1dbd79675a5    # Virginia
+    us-east-2:
+      AMI: ami-0cf31d971a3ca20d6    # Ohio
+    us-west-1:
+      AMI: ami-0782017a917e973e7    # N California
+    us-west-2:
+      AMI: ami-6cd6f714             # Oregon
+    ap-south-1:
+      AMI: ami-00b6a8a2bd28daf19    # Mumbai
+    ap-northeast-2:
+      AMI: ami-012566705322e9a8e    # Seoul
+    ap-southeast-1:
+      AMI: ami-01da99628f381e50a    # Singapore
+    ap-southeast-2:
+      AMI: ami-00e17d1165b9dd3ec    # Sydney
+    ap-northeast-1:
+      AMI: ami-08847abae18baa040    # Tokyo
+    ca-central-1:
+      AMI: ami-ce1b96aa             # Montreal
+    eu-central-1:
+      AMI: ami-0f5dbc86dd9cbf7a8    # Frankfurt
+    eu-west-1:
+      AMI: ami-0bdb1d6c15a40392c    # Ireland
+    eu-west-2:
+      AMI: ami-e1768386             # London
+    eu-west-3:
+      AMI: ami-06340c8c12baa6a09    # Paris
+    sa-east-1:
+      AMI: ami-0ad7b0031d41ed4b9    # Sao Paulo
+
+
+Resources:
+
+  # Security Group for the web server.  Allow HTTP and SSH from anywhere:
+  WebServerSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security Group for Web server
+      VpcId: !Ref VPC
+      Tags:
+      - Key: Name
+        Value: WebServerSecurityGroup
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+
+  # web server:
+  WebServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !FindInMap [ AmazonLinuxAMI, !Ref "AWS::Region", AMI]  # We lookup AMI in the region map
+      InstanceType: t2.micro                                          # Any instance type will do
+      KeyName: !Ref PrivateKeyName                                    # We get the keypair name from the input parameters
+      IamInstanceProfile: !Ref InstanceProfile                        # Allows EC2 Instance to talk with Cognito, SSM, etc.  See below.
+      NetworkInterfaces:
+      - DeviceIndex: 0
+        AssociatePublicIpAddress: true                                # We will need a public IP address
+        SubnetId: !Ref PublicSubnet                                   # We should sit in a public subnet.
+        GroupSet: [ !Ref WebServerSecurityGroup ]                     # Attach the security group
+      UserData:      #  This code installs a demo Java/Spring app.  Then it signals completion:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Update the OS and get Java
+          yum -y update
+          yum install -y wget java
+          # Install and run the nifty SSM Agent, just in case we want to do a remote session!
+          yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
+          start amazon-ssm-agent
+          # Can't believe this is needed, it should default from metadata but doesn't:
+          aws configure set default.region ${AWS::Region}
+          # Create User Pool:
+          COGNITO_USER_POOL_ID=$(aws cognito-idp create-user-pool --pool-name demo-pool \
+          --policies 'PasswordPolicy={MinimumLength=6,RequireUppercase=false,RequireLowercase=false,RequireNumbers=false,RequireSymbols=false}' \
+          --query 'UserPool.Id' --output text)
+          echo The cognito user pool id is: $COGNITO_USER_POOL_ID
+          # Define an 'app' that is allowed to use the pool:
+          COGNITO_USER_POOL_CLIENT_ID=$(aws cognito-idp create-user-pool-client \
+          --user-pool-id $COGNITO_USER_POOL_ID --client-name 'my client' --generate-secret --explicit-auth-flows ADMIN_NO_SRP_AUTH \
+          --query 'UserPoolClient.ClientId' --output text)
+          echo The user pool client ID is: $COGNITO_USER_POOL_CLIENT_ID 
+          # Get the 'client secret' for this app:
+          COGNITO_USER_POOL_CLIENT_SECRET=$(aws cognito-idp describe-user-pool-client \
+          --user-pool-id $COGNITO_USER_POOL_ID --client-id $COGNITO_USER_POOL_CLIENT_ID \
+          --query 'UserPoolClient.ClientSecret' --output text )
+          echo The user pool client secret is: $COGNITO_USER_POOL_CLIENT_SECRET
+          # Create a sample user named "robert", password "robert":
+          aws cognito-idp admin-create-user --user-pool-id $COGNITO_USER_POOL_ID --username robert --temporary-password robert
+          # Download and start Java/Spring app:
+          mkdir /opt/app
+          cd /opt/app
+          wget --quiet https://s3-us-west-2.amazonaws.com/kk-uploads-oregon/cognito-demo/spring-security-cognito-login-1.jar
+          mv spring-security-cognito-login-1.jar  app.jar
+          chmod +x app.jar
+          # Signal complete even though we haven't launched yet, we'll be ready in a second:
+          /opt/aws/bin/cfn-signal --stack ${AWS::StackName} --resource WebServer --region ${AWS::Region}
+          # Run the Spring Boot Web app, passing in values for User Pool ID, Cognito Client, and secret:
+          java -Dserver.port=80 -DCOGNITO.POOL.ID=$COGNITO_USER_POOL_ID -DCOGNITO.CLIENT.ID=$COGNITO_USER_POOL_CLIENT_ID -DCOGNITO.CLIENT.SECRET=$COGNITO_USER_POOL_CLIENT_SECRET -jar app.jar 
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT3M
+
+  # But of course, the Cognito calls, SSM agent, etc. won't work without permisisons, so create a user profile:
+  InstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Path: /
+      Roles: [ !Ref CognitoSsmRole]
+
+  # Allow EC2 instance to make calls to Cognito, SSM, and whatever.
+  CognitoSsmRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+        - Effect: Allow
+          Action: sts:AssumeRole
+          Principal:
+            Service: ec2.amazonaws.com
+      ManagedPolicyArns:
+      - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      - arn:aws:iam::aws:policy/AmazonCognitoPowerUser
+      # Note that any other policies required for the instance to do its job would be defined here as well.  
+
+
+# Finally, what we should see when we are all done.  The ELB's DNS name is the URL of our website:
+Outputs:
+  WebServerIpAddress:
+    Description: IP Address of the web server
+    Value: !Join ['', ["http://", !GetAtt WebServer.PublicIp ]]

@@ -4,16 +4,16 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.example</groupId>
-	<artifactId>spring-security-simple-login</artifactId>
+	<artifactId>spring-security-cognito-login</artifactId>
 	<version>1</version>
 	<packaging>jar</packaging>
 
-	<name>spring-security-simple-login</name>
+	<name>spring-security-cognito-login</name>
 	<description>Demo project for Spring Boot</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
+		<artifactId>spring-boot-starter-parent</artifactId> 
 		<version>2.0.6.RELEASE</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
@@ -24,13 +24,26 @@
 		<java.version>1.8</java.version>
 	</properties>
 
+	<dependencyManagement>
+	  <dependencies>
+		<!-- Instead of importing the entire AWS Java SDK (like 100M), 
+			 use a BOM and be selective about dependencies below. -->
+	    <dependency>
+	      <groupId>com.amazonaws</groupId>
+	      <artifactId>aws-java-sdk-bom</artifactId>
+	      <version>1.11.438</version>
+	      <type>pom</type>
+	      <scope>import</scope>
+	    </dependency>
+	  </dependencies>
+	</dependencyManagement>
+
 	<dependencies>
 
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk -->
 		<dependency>
 		    <groupId>com.amazonaws</groupId>
-		    <artifactId>aws-java-sdk</artifactId>
-		    <version>1.11.438</version>
+		    <artifactId>aws-java-sdk-cognitoidp</artifactId>
 		</dependency>
 	
 		<dependency>
