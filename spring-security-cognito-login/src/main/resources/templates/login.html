@@ -23,11 +23,11 @@
 		  -->
 		{{#springMacroRequestContext.request.parameterMap.error}}
 		<div class="alert alert-danger">Incorrect username and/or password</div>
-           {{/springMacroRequestContext.request.parameterMap.error}}
+        {{/springMacroRequestContext.request.parameterMap.error}}
 
 		<div class="row">
 
-			<div class="container">
+			<div class="col-sm">
 
 				<h1>Login</h1>
 	
@@ -64,6 +64,11 @@
 				</form>
 				<p>Login with either "robert" (password = username).</p>
 	
+			</div>
+			<div class="col-sm align-self-center">
+
+		        <a class="btn btn-lg btn-primary" href="/signup" role="button">Sign Up &raquo;</a>
+
 			</div>
 		</div>
 	</div>
