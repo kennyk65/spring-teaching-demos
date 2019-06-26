@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.aws.core.region.RegionProvider;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.services.cloudwatch.AmazonCloudWatch;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsync;
 import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClientBuilder;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
@@ -21,14 +20,13 @@ import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 @Service
 public class MonitoringService {
 
-    private Log log = LogFactory.getLog(MonitoringService.class);
+	private Log log = LogFactory.getLog(MonitoringService.class);
 	private AmazonCloudWatchAsync cloudWatchAsync;
-	// private AmazonCloudWatch cloudWatch;
+
 	@Autowired RegionProvider regionProvider;
 	
 	@PostConstruct
 	public void init() {
-	//	cloudWatch = AmazonCloudWatchClientBuilder.defaultClient();
 		cloudWatchAsync = AmazonCloudWatchAsyncClientBuilder.defaultClient();
 	}
 	
