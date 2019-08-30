@@ -11,5 +11,6 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @ConditionalOnAwsCloudEnvironment	//	This config only applies when running on AWS.
 public class AwsConfig {
+	//	TODO:  REPLACE AND RETEST WITH @ConditionalOnAwsCloudEnvironment and @ConditionalOnMissingAwsCloudEnvironment
 
 }
