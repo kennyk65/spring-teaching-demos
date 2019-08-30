@@ -12,6 +12,7 @@ import org.springframework.core.env.Environment;
  */
 @Configuration
 @ConditionalOnAwsCloudEnvironment	//	This config only applies when running on AWS.
+//	TODO:  REPLACE AND RETEST WITH @ConditionalOnAwsCloudEnvironment and @ConditionalOnMissingAwsCloudEnvironment
 //@EnableContextInstanceData	//	Get instance metadata, when running on AWS.  Automatic for Boot apps.
 //@EnableStackConfiguration(stackName = "awseb-e-ce8qvczr8a-stack")  // trying to get around errors on Elastic Beanstalk
 public class AwsConfig {
