@@ -3,7 +3,7 @@ package com.example;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.example.wf.Decider;
@@ -13,7 +13,7 @@ import com.example.wf.Worker1;
 import com.example.wf.Worker2;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = Application.class)
+@SpringBootTest(classes = Application.class)
 public class WorkFlowTest {
 
 	@Autowired Utility utility;

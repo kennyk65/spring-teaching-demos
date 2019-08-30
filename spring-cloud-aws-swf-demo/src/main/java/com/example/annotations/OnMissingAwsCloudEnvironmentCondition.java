@@ -16,4 +16,6 @@ public class OnMissingAwsCloudEnvironmentCondition extends OnAwsCloudEnvironment
 	public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		return !super.matches(context, metadata);
 	}
+	//	TODO:  REPLACE AND RETEST WITH @ConditionalOnAwsCloudEnvironment and @ConditionalOnMissingAwsCloudEnvironment
+
 }
