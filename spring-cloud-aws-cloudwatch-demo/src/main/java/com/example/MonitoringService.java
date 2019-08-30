@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.aws.core.region.RegionProvider;
 import org.springframework.stereotype.Service;
 
-import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClient;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsync;
+import com.amazonaws.services.cloudwatch.AmazonCloudWatchAsyncClientBuilder;
 import com.amazonaws.services.cloudwatch.model.MetricDatum;
 import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
+
 
 /**
  * All of the CloudWatch specific logic is in this service.
@@ -18,14 +20,14 @@ import com.amazonaws.services.cloudwatch.model.PutMetricDataRequest;
 @Service
 public class MonitoringService {
 
-    private Log log = LogFactory.getLog(MonitoringService.class);
-	private AmazonCloudWatchAsyncClient cloudWatch;
+	private Log log = LogFactory.getLog(MonitoringService.class);
+	private AmazonCloudWatchAsync cloudWatchAsync;
+
 	@Autowired RegionProvider regionProvider;
 	
 	@PostConstruct
 	public void init() {
-		cloudWatch = new AmazonCloudWatchAsyncClient();
-		cloudWatch.setRegion(regionProvider.getRegion());
+		cloudWatchAsync = AmazonCloudWatchAsyncClientBuilder.defaultClient();
 	}
 	
 	/**
@@ -43,7 +45,7 @@ public class MonitoringService {
 					.withMetricName("BoredomLevel")
 					.withValue(new Double(level)));
 		
-		cloudWatch.putMetricDataAsync(request);	// Yup, it's async!
+		cloudWatchAsync.putMetricData(request);  // Yup, it's async!
 		
 		//	Or use cloudwatch logs:
 		log.info("Boredom Level: " + level);
