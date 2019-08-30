@@ -35,5 +35,7 @@ import java.lang.annotation.Target;
 @Documented
 @Conditional(OnMissingAwsCloudEnvironmentCondition.class)
 public @interface ConditionalOnMissingAwsCloudEnvironment {
+	
+	//	TODO:  REPLACE AND RETEST WITH @ConditionalOnAwsCloudEnvironment and @ConditionalOnMissingAwsCloudEnvironment
 
 }
