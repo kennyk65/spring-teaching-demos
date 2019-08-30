@@ -42,6 +42,12 @@
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-aws</artifactId>
 		</dependency>
+
+		<!-- The Spring cloud starter AWS does not include CloudWatch. -->
+		  <dependency>
+		    <groupId>com.amazonaws</groupId>
+		    <artifactId>aws-java-sdk-cloudwatch</artifactId>
+		  </dependency>		
 		
 		<!-- Enables actuator endpoints like /beans, /env, etc. -->
 		<dependency>
@@ -68,7 +74,7 @@
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-dependencies</artifactId>
-				<version>Brixton.SR4</version>
+				<version>Finchley.SR1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
