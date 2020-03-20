@@ -7,7 +7,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 public class BFPP implements BeanFactoryPostProcessor {
 
 	@Override
-	public void postProcessBeanFactory(ConfigurableListableBeanFactory arg0)
+	public void postProcessBeanFactory(ConfigurableListableBeanFactory bf)
 			throws BeansException {
 		System.out.println( "This is the Bean Factory Post Processor.");
 	}
