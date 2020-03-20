@@ -1,0 +1,10 @@
+cloud:
+  aws:
+    # Spring Cloud is not smart enough to use the standard ~.aws/config file, so hard-code:
+    region.static: us-west-2	
+    
+    # Spring Cloud panics and fails if it can't find instance metadata, such as when 
+    # running on local machine.  Disable this:
+    stack.auto: false	
+    
+    queue-endpoint: https://sqs.us-west-2.amazonaws.com/011673140073/demo-queue
