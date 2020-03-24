@@ -31,7 +31,7 @@ public class HelloController {
         return "Hello";
     }
 
-    @SqsListener("https://sqs.us-west-2.amazonaws.com/011673140073/demo-queue")
+    @SqsListener("demo-queue")
     public void getMessage(String message) {
       LOG.info(" ***  Receiving Message from SQS Queue - "+message);
     }	
