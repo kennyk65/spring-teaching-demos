@@ -1,0 +1,33 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Serverless Spring Boot API - bookapp::book-service
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+
+Resources:
+  BookServiceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: com.example.demo.LambdaHandler::handleRequest
+      Runtime: java8
+      CodeUri: target/mvcd-1.jar
+      MemorySize: 512
+      Policies: AWSLambdaBasicExecutionRole
+      Timeout: 30
+      Events:
+        GetResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+
+Outputs:
+  HomePageUrl:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/'
+
+  HelloUrl:
+    Description: URL for application
+    Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello'
+    
