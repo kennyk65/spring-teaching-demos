@@ -11,9 +11,9 @@ public class A {
 	}
 	
 	
-//	@PostConstruct
-//	public void hiThere() {
-//		System.out.println("Class A PostConstruct");
-//	}
-//	
+	@PostConstruct
+	public void hiThere() {
+		System.out.println("Class A PostConstruct");
+	}
+	
 }
