@@ -17,6 +17,7 @@ public class CloudwatchApplication {
 		SpringApplication.run(CloudwatchApplication.class, args);
 	}
 
+
 	@Bean
 	public MeterRegistry meterRegistry() {
 
