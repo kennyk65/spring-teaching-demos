@@ -17,6 +17,10 @@ public class CloudwatchApplication {
 		SpringApplication.run(CloudwatchApplication.class, args);
 	}
 
+//	@Autowired public void setMeterRegistry( CloudWatchMeterRegistry registry ) {
+//		registry.timer()timer("justatest").config().
+//	}
+
 
 	@Bean
 	public MeterRegistry meterRegistry() {
@@ -38,6 +42,5 @@ public class CloudwatchApplication {
 				CloudWatchAsyncClient.create());
 
 	}
-
 
 }
