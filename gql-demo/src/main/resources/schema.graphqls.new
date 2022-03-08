@@ -1,0 +1,10 @@
+type Query {
+  restaurantByMerchantNumber(merchantNumber: ID): Restaurant
+}
+
+type Restaurant {
+  merchantNumber: ID
+  name: String
+  entityId: Int
+}
+
