@@ -1,8 +1,8 @@
 # This is my cool dockerfile
 # See http://spring.io/guides/gs/spring-boot-docker/
 
-FROM java:8
-MAINTAINER Ken Krueger
+#FROM java:8
+FROM bitnami/java:11
 
 # Optional, in case anything uses local disk.  Will be in var/lib/docker
 VOLUME /tmp
