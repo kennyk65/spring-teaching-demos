@@ -14,12 +14,9 @@ Metadata:
         Parameters: 
           - VPC
           - PublicSubnet
-          - PrivateKeyName
+          - AmazonLinuxAMI
 
 Parameters:
-  PrivateKeyName:
-    Type: AWS::EC2::KeyPair::KeyName
-    Description: The name of the private key file to use for SSH/RDP access to the instance, if needed.
 
   VPC:
     Type: AWS::EC2::VPC::Id
