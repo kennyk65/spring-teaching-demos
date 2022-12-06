@@ -8,7 +8,7 @@ Resources:
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
     Properties:
-      UserPoolName: !Join ['', [!Ref 'AWS::StackName', "-UserPool" ]]
+      UserPoolName: !Sub ${AWS::StackName}-UserPool
       Policies:
         PasswordPolicy:     # Since this is a demo, make relaxed password requirements.
           MinimumLength: 6
@@ -50,5 +50,5 @@ Outputs:
   # TODO: HOW TO OBTAIN THE CLIENT SECRET:    
   CognitoClientSecret:
     Description:  Unfortunately, client secret is not available via CloudFormation (grrrr) so you have to get it manually.
-    Value:  !Join ['', ["https://", !Ref "AWS::Region", ".console.aws.amazon.com/cognito/users/?region=", !Ref "AWS::Region", "#/pool/", !Ref CognitoUserPool, "/clients" ]]
+    Value:  !Sub https://${AWS::Region}.console.aws.amazon.com/cognito/users/?region=${AWS::Region}#/pool/${CognitoUserPool}/clients
     

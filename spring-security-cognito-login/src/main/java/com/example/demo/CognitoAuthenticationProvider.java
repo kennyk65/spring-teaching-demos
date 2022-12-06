@@ -1,17 +1,10 @@
 package com.example.demo;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.codec.digest.HmacAlgorithms;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -19,12 +12,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProvider;
-import com.amazonaws.services.cognitoidp.AWSCognitoIdentityProviderClientBuilder;
-import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthRequest;
-import com.amazonaws.services.cognitoidp.model.AdminInitiateAuthResult;
-import com.amazonaws.services.cognitoidp.model.AuthFlowType;
-import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
+import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthRequest;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AdminInitiateAuthResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.AuthFlowType;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.UserNotFoundException;
+
 
 /**
  * A Spring Security AuthentictionProvider based on an AWS Cognito User Pool.
@@ -39,21 +32,13 @@ import com.amazonaws.services.cognitoidp.model.UserNotFoundException;
  * is identified to this code via PoolID.  Additionally, the pool must have a "client app" defined
  * for it which represents this application.  The ClientID and Client Secret identify this "app". 
  * These values should not be confused with the general IAM Access Key / Secret Key.
- * 
- * 
  */
-@Component("cognitoProvider")
+@Component 
 public class CognitoAuthenticationProvider implements AuthenticationProvider {
 
-	@Value("${COGNITO.POOL.ID}")
-	private String poolId;
+	@Autowired CognitoProperties cognito;
 	
-	@Value("${COGNITO.CLIENT.ID}")
-	private String clientId;
-	
-	@Value("${COGNITO.CLIENT.SECRET}")
-	private String clientSecret;
-
+	@Autowired CognitoIdentityProviderClient cognitoClient;
 
 	@Override
 	public Authentication authenticate(Authentication authentication) throws AuthenticationException {
@@ -64,39 +49,44 @@ public class CognitoAuthenticationProvider implements AuthenticationProvider {
 		String userId = authentication.getName();
 		String password = authentication.getCredentials().toString();
 
+		//	This secret hash is required when making certain Cognito API calls,
+		//	typically when the UserPool's client specifies a secret:
+		String secretHash = 
+			SigningUtility.calculateSecretHash(
+				cognito.getClientId(),
+				userId,
+				cognito.getClientSecret());
+		
+
 		Map<String, String> params = new HashMap<>();
 		params.put("USERNAME", userId);
-		params.put("SECRET_HASH", calculateSecretHash(userId));
+		params.put("SECRET_HASH", secretHash);
 		params.put("PASSWORD", password);
 
-		//	Make a Cognito Identity Provider client.  This will default to use the ACCESS_KEY and SECRET_ACCESS_KEY 
-		//	associated with the local machine, or the SDK will use the instance's role to obtain one from STS.
-		AWSCognitoIdentityProvider identityProvider = 
-				AWSCognitoIdentityProviderClientBuilder.standard().build();
-			
+		
 		//	Make the login request to Cognito.  AWS documentation says this 
 		//	requires "admin credentials", but this is incorrect; one only needs cognito permissions:
-		AdminInitiateAuthResult result = null;
+		AdminInitiateAuthResponse response = null;
 		try {
-			result = 
-					identityProvider.adminInitiateAuth(
-						new AdminInitiateAuthRequest()
-							.withUserPoolId(poolId)
-							.withClientId(clientId)
-							.withAuthFlow(AuthFlowType.ADMIN_NO_SRP_AUTH)	// This flow is essentially "login with username and password"
-//							.withAuthFlow(AuthFlowType.USER_PASSWORD_AUTH)	// Amazingly, this does not mean "login with username and password"
-							.withAuthParameters(params)				
-					);
+			response = 
+				cognitoClient.adminInitiateAuth(
+					AdminInitiateAuthRequest.builder()
+						.userPoolId(cognito.getPoolId())
+						.clientId(cognito.getClientId())
+						.authFlow(AuthFlowType.ADMIN_NO_SRP_AUTH) 	// This flow is essentially "login with username and password"
+						.authParameters(params)
+						.build()
+				);
 		} catch(UserNotFoundException notfound) {
 			//	If we get a user not found error from AWS Cognito, translate this into a Spring Security user not found error.
 			//	this will allow the framework to handle the situation gently (take us back to the login page) 
 			//	rather than an unknown general error:
-			throw new UsernameNotFoundException(notfound.getErrorMessage(),notfound);
+			throw new UsernameNotFoundException(notfound.getMessage(),notfound);
 		}
 		
 		
 		//	Let's ignore new password stuff for now:
-		if(result.getChallengeName().equals("NEW_PASSWORD_REQUIRED")) {
+		if(response.challengeName().equals("NEW_PASSWORD_REQUIRED")) {
 			// ignore
 		}
 
@@ -109,28 +99,6 @@ public class CognitoAuthenticationProvider implements AuthenticationProvider {
 	@Override
 	public boolean supports(Class<?> authentication) {
 		return authentication.equals(UsernamePasswordAuthenticationToken.class);
-	}
-
-	
-	//	This code is using the clientSecret to somehow hash/sign the provided username.
-	//	I'm not really sure why this needs to be done, I guess it just proves we posess the client secret.
-	private String calculateSecretHash(@NotNull String userName) {
-
-		SecretKeySpec signingKey = 
-			new SecretKeySpec(
-				clientSecret.getBytes(StandardCharsets.UTF_8),
-				HmacAlgorithms.HMAC_SHA_256.toString());
-
-		try {
-			Mac mac = Mac.getInstance(HmacAlgorithms.HMAC_SHA_256.toString());
-			mac.init(signingKey);
-			mac.update(userName.getBytes(StandardCharsets.UTF_8));
-			byte[] rawHmac = mac.doFinal(clientId.getBytes(StandardCharsets.UTF_8));
-			return Base64.getEncoder().encodeToString(rawHmac);
-
-		} catch (Exception ex) {
-			throw new RuntimeException("Error calculating secret hash", ex);
-		}
 	}
 
 }
