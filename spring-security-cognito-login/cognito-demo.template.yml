@@ -31,8 +31,33 @@ Parameters:
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
     Description: You probably won't need to change this value.  This is looking up the latest Amazon Linux 2 AMI using the Parameter Store...
 
+  JavaAppJar:
+    Type: String
+    Default: https://s3-us-west-2.amazonaws.com/kk-uploads-oregon/cognito-demo/spring-security-cognito-login-1.jar
+    Description:  URL of the JAR for running the app.
 
 Resources:
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-UserPool
+      Policies:
+        PasswordPolicy:     # Since this is a demo, make relaxed password requirements.
+          MinimumLength: 6
+          RequireLowercase: false
+          RequireNumbers: false
+          RequireSymbols: false
+          RequireUppercase: false      
+
+      
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      ClientName: ExampleSpringApp
+      ExplicitAuthFlows: 
+        - ADMIN_NO_SRP_AUTH       # As far as I can tell, this is simply username/password authentication.
+      GenerateSecret: true        # We will need the secret in our Java code to make the call.  Don't even know why this is optional.
+      UserPoolId: !Ref CognitoUserPool
 
   # Security Group for the web server.  Allow HTTP and SSH from anywhere:
   WebServerSecurityGroup:
@@ -70,39 +95,29 @@ Resources:
           #!/bin/bash
           # Update the OS and get Java
           yum -y update
-          yum install wget java-11-amazon-corretto -y
-          ## Install and run the nifty SSM Agent, just in case we want to do a remote session!
-          #yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm
-          start amazon-ssm-agent
+          yum install wget java-17-amazon-corretto -y
           # Can't believe this is needed, it should default from metadata but doesn't:
           aws configure set default.region ${AWS::Region}
-          # Create User Pool:
-          COGNITO_USER_POOL_ID=$(aws cognito-idp create-user-pool --pool-name demo-pool \
-          --policies 'PasswordPolicy={MinimumLength=6,RequireUppercase=false,RequireLowercase=false,RequireNumbers=false,RequireSymbols=false}' \
-          --query 'UserPool.Id' --output text)
-          echo The cognito user pool id is: $COGNITO_USER_POOL_ID
-          # Define an 'app' that is allowed to use the pool:
-          COGNITO_USER_POOL_CLIENT_ID=$(aws cognito-idp create-user-pool-client \
-          --user-pool-id $COGNITO_USER_POOL_ID --client-name 'my client' --generate-secret --explicit-auth-flows ADMIN_NO_SRP_AUTH \
-          --query 'UserPoolClient.ClientId' --output text)
-          echo The user pool client ID is: $COGNITO_USER_POOL_CLIENT_ID 
+          COGNITO_POOL_ID=${CognitoUserPool}
+          COGNITO_CLIENT_ID=${CognitoUserPoolClient}
+          echo The cognito user pool id is: $COGNITO_POOL_ID and the client ID is: $COGNITO_CLIENT_ID 
           # Get the 'client secret' for this app:
-          COGNITO_USER_POOL_CLIENT_SECRET=$(aws cognito-idp describe-user-pool-client \
-          --user-pool-id $COGNITO_USER_POOL_ID --client-id $COGNITO_USER_POOL_CLIENT_ID \
+          COGNITO_CLIENT_SECRET=$(aws cognito-idp describe-user-pool-client \
+          --user-pool-id $COGNITO_POOL_ID --client-id $COGNITO_CLIENT_ID \
           --query 'UserPoolClient.ClientSecret' --output text )
-          echo The user pool client secret is: $COGNITO_USER_POOL_CLIENT_SECRET
+          echo The user pool client secret is: $COGNITO_CLIENT_SECRET
           # Create a sample user named "robert", password "robert":
-          aws cognito-idp admin-create-user --user-pool-id $COGNITO_USER_POOL_ID --username robert --temporary-password robert
+          aws cognito-idp admin-create-user --user-pool-id $COGNITO_POOL_ID --username robert --temporary-password robert
           # Download and start Java/Spring app:
           mkdir /opt/app
           cd /opt/app
-          wget --quiet https://s3-us-west-2.amazonaws.com/kk-uploads-oregon/cognito-demo/spring-security-cognito-login-1.jar
+          wget --quiet ${JavaAppJar}
           mv spring-security-cognito-login-1.jar  app.jar
           chmod +x app.jar
           # Signal complete even though we haven't launched yet, we'll be ready in a second:
           /opt/aws/bin/cfn-signal --stack ${AWS::StackName} --resource WebServer --region ${AWS::Region}
-          # Run the Spring Boot Web app, passing in values for User Pool ID, Cognito Client, and secret:
-          java -Dserver.port=80 -DCOGNITO.POOL.ID=$COGNITO_USER_POOL_ID -DCOGNITO.CLIENT.ID=$COGNITO_USER_POOL_CLIENT_ID -DCOGNITO.CLIENT.SECRET=$COGNITO_USER_POOL_CLIENT_SECRET -jar app.jar 
+          # Run the Spring Boot Web app.  This code expects COGNITO_POOL_ID, COGNITO_CLIENT_ID, AND COGNITO_CLIENT_SECRET environment variables set:
+          java -Dserver.port=80 -Dcognito.pool.id=$COGNITO_POOL_ID -Dcognito.client.id=$COGNITO_CLIENT_ID -Dcognito.client.secret=$COGNITO_CLIENT_SECRET -jar app.jar 
     CreationPolicy:
       ResourceSignal:
         Count: 1
