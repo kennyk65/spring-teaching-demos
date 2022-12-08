@@ -1,17 +1,19 @@
-# This is my cool dockerfile
-# See http://spring.io/guides/gs/spring-boot-docker/
-
 #FROM java:8
-FROM bitnami/java:11
+#FROM bitnami/java:11
+FROM eclipse-temurin:17.0.5_8-jre-alpine
 
-# Optional, in case anything uses local disk.  Will be in var/lib/docker
-VOLUME /tmp
+# Make a new directory and use it as work directory:
+WORKDIR /opt/app
 
 # Adding the file we just created in the build process as 'app.war'
-ADD /target/spring-cloud-aws-environment-demo-1.war app.war
+COPY /target/spring-cloud-aws-environment-demo-1.war app.war
 
-# Optional, adds a last modified time to each file.  Not needed here.
-RUN bash -c 'touch /app.war'
+# Do not run as root.  Instead create a group and user.
+# Change the ownership of WORKDIR so javauser can run from here
+RUN addgroup --system javauser \
+&& adduser -S -s /usr/sbin/nologin -G javauser javauser \
+&& chown -R javauser:javauser .
 
-# Equivalent of running "java -jar /app.war".
-ENTRYPOINT ["java","-jar","/app.war"]
+# Change user to non-root and run:
+USER javauser
+ENTRYPOINT ["java", "-jar", "app.war"]
