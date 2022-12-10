@@ -94,20 +94,20 @@ Resources:
         Fn::Base64: !Sub |
           #!/bin/bash
           # Update the OS and get Java
-          yum -y update
-          yum install wget java-17-amazon-corretto -y
-          # Can't believe this is needed, it should default from metadata but doesn't:
+          yum update -y -q
+          yum install wget java-17-amazon-corretto -y -q
+          # Set region:
           aws configure set default.region ${AWS::Region}
-          COGNITO_POOL_ID=${CognitoUserPool}
-          COGNITO_CLIENT_ID=${CognitoUserPoolClient}
-          echo The cognito user pool id is: $COGNITO_POOL_ID and the client ID is: $COGNITO_CLIENT_ID 
+          COGNITO_POOLID=${CognitoUserPool}
+          COGNITO_CLIENTID=${CognitoUserPoolClient}
+          echo The cognito user pool id is: $COGNITO_POOLID and the client ID is: $COGNITO_CLIENTID 
           # Get the 'client secret' for this app:
-          COGNITO_CLIENT_SECRET=$(aws cognito-idp describe-user-pool-client \
-          --user-pool-id $COGNITO_POOL_ID --client-id $COGNITO_CLIENT_ID \
+          COGNITO_CLIENTSECRET=$(aws cognito-idp describe-user-pool-client \
+          --user-pool-id $COGNITO_POOLID --client-id $COGNITO_CLIENTID \
           --query 'UserPoolClient.ClientSecret' --output text )
-          echo The user pool client secret is: $COGNITO_CLIENT_SECRET
+          echo The user pool client secret is: $COGNITO_CLIENTSECRET
           # Create a sample user named "robert", password "robert":
-          aws cognito-idp admin-create-user --user-pool-id $COGNITO_POOL_ID --username robert --temporary-password robert
+          aws cognito-idp admin-create-user --user-pool-id $COGNITO_POOLID --username robert --temporary-password robert
           # Download and start Java/Spring app:
           mkdir /opt/app
           cd /opt/app
@@ -116,8 +116,10 @@ Resources:
           chmod +x app.jar
           # Signal complete even though we haven't launched yet, we'll be ready in a second:
           /opt/aws/bin/cfn-signal --stack ${AWS::StackName} --resource WebServer --region ${AWS::Region}
-          # Run the Spring Boot Web app.  This code expects COGNITO_POOL_ID, COGNITO_CLIENT_ID, AND COGNITO_CLIENT_SECRET environment variables set:
-          java -Dserver.port=80 -Dcognito.pool.id=$COGNITO_POOL_ID -Dcognito.client.id=$COGNITO_CLIENT_ID -Dcognito.client.secret=$COGNITO_CLIENT_SECRET -jar app.jar 
+          # Run the Spring Boot Web app.  This code expects COGNITO_POOLID, COGNITO_CLIENTID, AND COGNITO_CLIENTSECRET environment variables set:
+          java -Dserver.port=80 -jar app.jar --cognito.poolid=$COGNITO_POOLID --cognito.clientid=$COGNITO_CLIENTID --cognito.clientsecret=$COGNITO_CLIENTSECRET 
+          #java -Dserver.port=80 -Dcognito.poolid=$COGNITO_POOLID -Dcognito.clientid=$COGNITO_CLIENTID -Dcognito.clientsecret=$COGNITO_CLIENTSECRET -jar app.jar
+          #java -Dserver.port=80 -jar app.jar
     CreationPolicy:
       ResourceSignal:
         Count: 1

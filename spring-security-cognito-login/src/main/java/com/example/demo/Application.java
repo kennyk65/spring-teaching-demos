@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.cognitoidentity.model.CognitoIdentityProv
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan ({"com.example"})
+@EnableConfigurationProperties(CognitoProperties.class)
 public class Application {
 
 	public static void main(String[] args) {
@@ -28,7 +28,7 @@ public class Application {
 	 */	
 	@Bean
 	public CognitoIdentityProviderClient cognitoUserPool(CognitoProperties cognito) {
-		System.out.println(String.format("Cognito properties are: user pool id: %s, client id: %s, client secret %s", cognito.getPoolId(), cognito.getClientId(), cognito.getClientSecret()));
+		System.out.println( cognito.toString() );
 		return CognitoIdentityProviderClient.builder().build();
 	}
 }

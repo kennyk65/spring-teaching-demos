@@ -28,14 +28,7 @@
 	  <dependencies>
 		<!-- Instead of importing the entire AWS Java SDK (like 100M), 
 			 use a BOM and be selective about dependencies below. -->
-<!-- 	    <dependency>
-	      <groupId>com.amazonaws</groupId>
-	      <artifactId>aws-java-sdk-bom</artifactId>
-	      <version>1.11.438</version>
-	      <type>pom</type>
-	      <scope>import</scope>
-	    </dependency>
- -->        <dependency>
+        <dependency>
             <groupId>software.amazon.awssdk</groupId>
             <artifactId>bom</artifactId>
             <version>2.18.16</version>
@@ -61,6 +54,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-mustache</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
@@ -98,11 +96,6 @@
 		    <artifactId>commons-codec</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-configuration-processor</artifactId>
-			<optional>true</optional>
-		</dependency>
 	</dependencies>
 
 	<build>

@@ -14,12 +14,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(webEnvironment=WebEnvironment.MOCK)
 @AutoConfigureMockMvc
-@TestPropertySource(locations = {"classpath:cognito-test.properties"} )
+@SpringBootTest(webEnvironment=WebEnvironment.MOCK,properties = {"cognito.poolId=aaa","cognito.clientId=bbb","cognito.clientSecret=ccc"})
 public class ApplicationTests {
 
 	@Autowired MockMvc mock;
