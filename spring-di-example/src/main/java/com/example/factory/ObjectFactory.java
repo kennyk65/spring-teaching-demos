@@ -2,7 +2,7 @@ package com.example.factory;
 
 import com.example.AccountRepository;
 import com.example.TransferRepository;
-import com.example.TransferService;
+//import com.example.TransferService;
 
 public class ObjectFactory {
 
@@ -16,7 +16,7 @@ public class ObjectFactory {
         return new TransferRepository();
     }
 
-    public static TransferService getTransferService() {
-        return new TransferService();
-    }
+    // public static TransferService getTransferService() {
+    //     return new TransferService();
+    // }
 }

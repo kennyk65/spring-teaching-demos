@@ -6,6 +6,7 @@ public class TestTransferService {
 
     @Test
     public void testTransferService() {
-        (new TransferService()).someMethod();
+        AccountRepository repo = new AccountRepository();
+        (new TransferService(repo)).someMethod();
     }
 }
