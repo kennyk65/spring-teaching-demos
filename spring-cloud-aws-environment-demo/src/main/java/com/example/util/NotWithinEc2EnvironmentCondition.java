@@ -5,18 +5,15 @@ import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
+ * Does the opposite as the WithinEc2EnvironmentCondition.
+ * 
  * @author Ken Krueger
  */
-public class WithinEc2EnvironmentCondition implements ConfigurationCondition {
-
-    @Override
-    public ConfigurationPhase getConfigurationPhase() {
-        return ConfigurationPhase.REGISTER_BEAN;
-    }
+public class NotWithinEc2EnvironmentCondition extends WithinEc2EnvironmentCondition {
 
     @Override
     public boolean matches(ConditionContext context, AnnotatedTypeMetadata metadata) {
-        return Ec2EnvironmentCheckUtils.isRunningOnCloudEnvironment();
+        return !super.matches(context,metadata);
     }
 
 }

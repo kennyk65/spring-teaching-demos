@@ -21,7 +21,7 @@ import org.springframework.context.annotation.Conditional;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Conditional(WithinEc2EnvironmentCondition.class)
-public @interface WithinEc2Environment {
+@Conditional(NotWithinEc2EnvironmentCondition.class)
+public @interface NotWithinEc2Environment {
 
 }
