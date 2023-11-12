@@ -9,6 +9,13 @@ import software.amazon.awssdk.imds.Ec2MetadataClient;
 import software.amazon.awssdk.imds.Ec2MetadataResponse;
 
 /**
+ * Determines if the application is running within an EC2 instance based on the availability of EC2
+ * Instance Metadata, either IMDS v1 or v2.  Instance metadata can be observed when an application
+ * is running within EC2, Elastic Beanstalk, ECS, EKS, etc.  The presence of instance metadata can
+ * be used as a general indicator of whether code is running in the AWS cloud or a local environment,
+ * however there are exceptions to the general principal, such as when EC2 instance deliberately disables
+ * instance metadata.
+ * 
  * @author Ken Krueger
  */
 public final class Ec2EnvironmentCheckUtils {

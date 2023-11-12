@@ -16,7 +16,7 @@
 
 	<name>spring-cloud-aws-environment-demo</name>
 	<description>Spring Cloud AWS - Demo of environment</description>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<properties>
 		<java.version>17</java.version>

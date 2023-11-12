@@ -11,10 +11,11 @@ import org.springframework.context.annotation.Conditional;
 
 /**
  * {@link org.springframework.context.annotation.Conditional} annotation that returns true
- * if the current JVM is started within an EC2 instance, more specifically it returns true
- * if EC2 Instance Metadata is available.  Useful to restrict creation of beans which would
- * only be applicable if the application context is bootstrapped inside an EC2 instance (e.g. 
- * beans that fetch meta data or beans that can only connect to AWS internal services like Elasticache)
+ * if the current JVM is NOT started within an EC2 instance, more specifically it returns true
+ * if EC2 Instance Metadata is NOT available.  This is true when NOT running within EC2, ElasticBeanstalk, 
+ * ECS, EKS, etc., but is also true if the EC2 instance metadata service is simply switched off.
+ * Useful to restrict creation of beans which would only be applicable if the application context is 
+ * NOT bootstrapped inside an EC2 instance, such as running in a local environment or another cloud.
  *
  * @author Ken Krueger
  */
