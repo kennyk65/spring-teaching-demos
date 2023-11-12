@@ -3,7 +3,8 @@ package com.example;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import com.example.annotations.ConditionalOnMissingAwsCloudEnvironment;
+import com.example.util.NotWithinEc2Environment;
+
 
 /**
  * This configuration class will be active only if NOT running on the AWS environment.
@@ -11,7 +12,7 @@ import com.example.annotations.ConditionalOnMissingAwsCloudEnvironment;
  * 
  */
 @Configuration
-@ConditionalOnMissingAwsCloudEnvironment		//	This config only applies when NOT running on AWS.
+@NotWithinEc2Environment
 @PropertySource("classpath:non-aws.properties")	//	Use these properties only when NOT running on AWS.
 public class NonAwsConfig {
 
