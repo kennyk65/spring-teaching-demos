@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.lang.Nullable;
 
 import io.awspring.cloud.core.config.AwsPropertySource;
+import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.imds.Ec2MetadataClient;
 
 public class Ec2InstanceMetadataPropertySource extends AwsPropertySource <Ec2InstanceMetadataPropertySource, Ec2MetadataClient>{
@@ -48,7 +49,11 @@ public class Ec2InstanceMetadataPropertySource extends AwsPropertySource <Ec2Ins
 
     // Convenience method to cut down on redundant code.
     private void mapPut(Map<String, String> map, String key) {
-        map.put(key, client.get(prefix +  key).asString());
+        try {
+            map.put(key, client.get(prefix +  key).asString());
+        } catch (SdkClientException e) {
+            logger.debug("Unable to read property " + prefix + key + ", exception message: " + e.getMessage());
+        }
     }
 
     @Override
