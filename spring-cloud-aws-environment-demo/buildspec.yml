@@ -12,4 +12,4 @@ phases:
       - mvn package
 artifacts:
   files:
-    - target/spring-cloud-aws-environment-demo-1.war
+    - target/spring-cloud-aws-environment-demo-17.war

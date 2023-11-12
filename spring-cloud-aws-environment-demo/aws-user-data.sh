@@ -1,4 +1,9 @@
 #!/bin/bash
-yum update -y
-wget https://s3-us-west-2.amazonaws.com/kk-site/spring-cloud-aws-environment-demo-1.war
-java -jar -Dserver.port=80 spring-cloud-aws-environment-demo-1.war
+yum -y update
+yum install java-17-amazon-corretto -y
+yum install https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_amd64/amazon-ssm-agent.rpm -y
+start amazon-ssm-agent
+cd /tmp
+wget https://kk-uploads-oregon.s3.amazonaws.com/spring-cloud-aws-environment-demo-17.jar -q
+mv *.jar app.jar
+java -jar app.jar --server.port=80

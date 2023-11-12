@@ -6,7 +6,7 @@ FROM eclipse-temurin:17.0.5_8-jre-alpine
 WORKDIR /opt/app
 
 # Adding the file we just created in the build process as 'app.war'
-COPY /target/spring-cloud-aws-environment-demo-1.war app.war
+COPY /target/spring-cloud-aws-environment-demo-17.war app.war
 
 # Do not run as root.  Instead create a group and user.
 # Change the ownership of WORKDIR so javauser can run from here
