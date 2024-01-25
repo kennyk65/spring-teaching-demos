@@ -1,11 +1,10 @@
-package example;
+package example.java9;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.rxjava3.core.Observable;
-import io.reactivex.rxjava3.core.Single;
+import reactor.core.publisher.Mono;
 
-public class Java9RxJava {
+public class ReactorDemo {
 
     // Utility method to simulate a delay
     private static void delay(int i) {
@@ -27,13 +26,13 @@ public class Java9RxJava {
         delay(1);
         return input + "!!";
     }
-    
+
     public static void main(String[] args) {
-        Single.fromCallable(() -> doThing1())
-                .map(Java9RxJava::doThing2)
-                .map(Java9RxJava::doThing3)
-                .doAfterSuccess(System.out::println)
-                .subscribe(); // Subscribe to start the reactive pipeline
+        Mono.fromCallable(() -> doThing1())
+            .map(ReactorDemo::doThing2)
+            .map(ReactorDemo::doThing3)
+            .doOnNext(System.out::println)
+            .subscribe(); 
     }
 
 }

@@ -1,10 +1,10 @@
-package example;
+package example.java8;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-public class Java8Threads {
+public class Demo {
 
     // Utility method to simulate a delay
     private static void delay(int i) {
@@ -23,12 +23,13 @@ public class Java8Threads {
     public static void main(String[] args) {
         // Create a CompletableFuture
         longRunningProcess().thenAccept(result -> {
-            System.out.println("Result from the CompletableFuture: " + result);
+            System.out.println("Result from CompletableFuture: " + result);
         });
 
         // Do other work...
 
-        // Introduce a delay to prevent the JVM from exiting before work is complete.
+        // Introduce a delay to prevent the JVM 
+        // from exiting before work is complete.
         delay(3);
     }
 }

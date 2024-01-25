@@ -1,6 +1,7 @@
 var result;
 
-// Function to simulate a long-running, blocking process with an inline callback
+// Function to simulate a long-running, blocking process 
+// with an inline callback
 function longRunningProcess(callback) {
     setTimeout(() => {
         callback("Hello World!");

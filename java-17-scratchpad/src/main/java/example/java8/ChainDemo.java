@@ -1,9 +1,9 @@
-package example;
+package example.java8;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 
-public class Java8Threads2 {
+public class ChainDemo {
 
     // Utility method to simulate a delay
     private static void delay(int i) {
@@ -37,7 +37,8 @@ public class Java8Threads2 {
 
         System.out.println("Main thread continues, unhindered.");
 
-        // Introduce a delay to prevent the JVM from exiting before work is complete.
+        // Introduce a delay to prevent the JVM 
+        // from exiting before work is complete.
         delay(4);
     }
 }

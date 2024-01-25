@@ -1,6 +1,6 @@
-package example;
+package example.java1;
 
-public class Java1ThreadsA {
+public class Simple {
 
     public void threadExample() {
         Runnable r = new Runnable (){

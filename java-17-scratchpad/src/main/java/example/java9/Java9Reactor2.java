@@ -1,4 +1,4 @@
-package example;
+package example.java9;
 
 import java.util.concurrent.TimeUnit;
 

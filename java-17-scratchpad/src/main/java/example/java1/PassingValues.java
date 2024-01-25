@@ -1,23 +1,24 @@
-package example;
+package example.java1;
 
 import java.util.concurrent.TimeUnit;
 
-public class Java1Threads {
-    // Shared variable to store the result
+public class PassingValues {
+
+    // Variable shared between threads:
     private static String result;
 
-    // Utility method to simulate a delay
+    // Utility method to simulate a delay:
     private static void delay(int i) {
         try { TimeUnit.SECONDS.sleep(i); } 
         catch (InterruptedException e) {}
     }
 
-    // Create an instance of a Runnable that updates the shared result variable
-    private static Runnable myRunnable = new Runnable (){
+    // Create an instance of a Runnable that updates the shared variable:
+    private static Runnable workToDo = new Runnable (){
         public void run() {
             String s = longRunningProcess();  
             synchronized (this) {
-                result = s;     //  Blocking!  Safely update the shared variable.
+                result = s;     //  Blocking!  Safely update shared variable.
             }
         }
 
@@ -30,12 +31,12 @@ public class Java1Threads {
 
     public static void main(String[] args) {
         // Create a Thread, pass the Runnable, and start it:
-        Thread thread = new Thread(myRunnable);
+        Thread thread = new Thread(workToDo);
         thread.start();
 
 	    // Do other work...
 
-        // Wait for the thread to complete - that's blocking!
+        // Wait for the thread to complete:
         try {
             thread.join();  //  blocking!
         } catch (InterruptedException e) {
@@ -44,7 +45,7 @@ public class Java1Threads {
 
         // Use results
         String s = null;
-        synchronized (myRunnable) { 
+        synchronized (workToDo) { 
             s = result;     //  Blocking! Safely acquire the shared variable
         } 
         System.out.println("Result from the thread: " + s);
