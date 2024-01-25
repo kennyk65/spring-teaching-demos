@@ -1,4 +1,4 @@
-package com.example;
+package com.example.naive;
 
 public class TransferRepository {
 
