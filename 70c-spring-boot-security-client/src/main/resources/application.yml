@@ -1,0 +1,23 @@
+# Alter Spring Boot's default user and password.
+# These credentials allow the end user to authenticate with this application via a login page.
+spring:
+  security:
+    user:
+      name: webuser
+      password: password
+
+# Provide URI and credentials for obtaining a JWT from the authorization server.
+# These credentials allow this application to authenticate with the authorization server via HTTP Basic.
+authorization:
+  server:
+    port: 9000
+    uri: http://localhost:%s/token
+    user: client
+    password: DoNotTell
+
+# The resource server will provide all the data and business logic.
+# Notice there are no credentials; the JWT is passed on each request to provide authentication.
+resource:
+  server:
+    port: 8000
+    uri:  http://localhost:%s

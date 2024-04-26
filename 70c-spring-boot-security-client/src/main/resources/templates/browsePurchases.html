@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Browse Purchases - SportyStuf Purchase Entry System</title>
+</head>
+<body>
+	<h1>Browse Purchases</h1>
+	<table border="1">
+		<tr>
+			<td>&nbsp;</td>
+			<td>Purchase Id</td>
+			<td>Customer Name</td>
+			<td>Purchase Date</td>
+			<td>Product</td>
+		</tr>
+		<tr th:each="purchase : ${purchaseList}">
+			<!-- Add Edit link -->
+			<td>Edit</td>
+			<!-- Other purchase details -->
+			<td th:text="${purchase.id}"></td>
+			<td th:text="${purchase.customer.name}"></td>
+			<td th:text='${#dates.format(purchase.purchaseDate, "MMM d, yyyy")}'></td>
+			<td th:text="${purchase.product}"></td>
+		</tr>
+	</table>
+	<br />
+
+	<!-- Need URL for index page -->
+	<a th:href="@{/index.html}">Back to Main Menu</a>
+	
+	<div th:include="footer :: content"></div>
+
+</body>
+</html>
