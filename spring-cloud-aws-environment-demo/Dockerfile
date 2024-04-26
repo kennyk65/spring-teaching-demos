@@ -1,5 +1,3 @@
-#FROM java:8
-#FROM bitnami/java:11
 FROM eclipse-temurin:17.0.5_8-jre-alpine
 
 # Make a new directory and use it as work directory:
@@ -16,4 +14,4 @@ RUN addgroup --system javauser \
 
 # Change user to non-root and run:
 USER javauser
-ENTRYPOINT ["java", "-jar", "app.war"]
+ENTRYPOINT ["java", "-jar", "-Dserver.port=8080", "app.war"]
