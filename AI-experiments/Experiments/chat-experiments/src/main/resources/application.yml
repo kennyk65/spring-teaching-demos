@@ -1,0 +1,92 @@
+spring:
+  application.name: Lab2 Chat
+  main.web-application-type: none     # Do not start a web server.
+
+  ai:
+    retry:
+      max-attempts: 1           # Maximum number of retry attempts.
+      on-client-errors: false   # If false, throw a NonTransientAiException, and do not attempt retry for 4xx client error codes.
+    bedrock.titan.chat.enabled: false # Disable all models by default.
+    ollama.chat.enabled: false        # Disable all models by default.
+    openai.chat.enabled: false        # Disable all models by default.
+    openai.image.enabled: false        # Disable all models by default.
+    azure.openai.chat.enabled: false  # Disable all models by default.
+
+---
+spring:
+  config.activate.on-profile: ollama
+
+  # TODO-04: Set the spring.application.name to "Lab2 Ollama Chat" or something similar.
+  # Disable the automatic retry mechanism using spring.ai.retry.max-attempts: 1.
+  # Set the ai.ollama.base-url to http://localhost:11434, unless your container is running on a different URL.
+
+  application.name: Lab2 Ollama Chat
+  ai:
+    ollama.base-url: http://localhost:11434  # Default base URL when you run Ollama from Docker
+
+---
+spring:
+  config.activate.on-profile: aws
+
+  # TODO-04: Set the spring.application.name to "Lab2 Bedrock Chat" or something similar.
+  # Set the ai.bedrock.aws.region to "us-west-2", or whichever region you have enabled the titan model in.
+  # Set the ai.bedrock.titan.chat.enabled to specify use of the Titan chat model.
+  # Take advantage of YAML's hierarchical structure (indenting) to set these values.
+  
+  application.name: Lab2 Bedrock Chat
+  ai:
+    bedrock:
+      aws.region: us-west-2
+      titan:
+        chat:
+          enabled: true
+
+---
+spring:
+  config.activate.on-profile: openai
+
+  # TODO-04: Set the spring.application.name to "Lab2 OpenAI Chat" or something similar.
+  # Note that there are various properties we can set here, including credentials,
+  # but we never want to commit credentials to source control.
+  
+  application.name: Lab2 OpenAI Chat
+  ai:
+    openai:
+      api-key: NEVER-PLACE-SECRET-KEY-IN-CONFIG-FILE
+      chat.enabled: true
+---
+spring:
+  config.activate.on-profile: azure
+
+  # TODO-04: Set the spring.application.name to "Lab2 Azure OpenAI Chat" or something similar.
+  # Set the ai.azure.openai.endpoint to the value you established during Azure setup.
+  # Set the ai.azure.openai.chat.options.deployment-name to the value you establised during setup.
+  # Set the ai.azure.openai.chat.options.model to "gpt-35-turbo" to use the GPT-3.5 model.
+  # Take advantage of YAML's hierarchical structure (indenting) to set these values.
+
+  application.name: Lab2 Azure OpenAI Chat
+  ai:
+    azure:
+      openai:
+        api_key: NEVER-PLACE-SECRET-KEY-IN-CONFIG-FILE
+        endpoint: ENDPOINT-GOES-HERE
+        chat.options:
+          deployment-name: DEPLOYMENT-NAME-GOES-HERE
+          model: gpt-35-turbo        
+
+---
+spring:
+  config.activate.on-profile: stabilityai
+
+  ai:
+    stabilityai:
+      image:
+        enabled: true
+        option:
+          n: 1                          # Number of images to generate.
+          responseFormat: application/json   # or   image/png
+          cfg_scale: 8.0                # 0-35, how closely the prompt is followed.
+          model: stable-diffusion-v1-6  # The model to use in Stability AI.
+          width: 512                    # Must be evenly divisible by 64
+          height: 512                   # Must be evenly divisible by 64
+          steps: 5                      # Number of diffusion steps to run. Valid range: 10 to 50.
