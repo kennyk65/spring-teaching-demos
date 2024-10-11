@@ -3,13 +3,13 @@ logging.level.org.springframework.security: DEBUG
 spring.security.oauth2.client.registration:
   google:
     # Google OAuth 2 client app can be setup at https://console.developers.google.com/apis/credentials            
-    clientId: 1034653135442-j27ijg9om55p2ascg1gurbj3sp46iuek.apps.googleusercontent.com
-    clientSecret: kmcGAl5meGxwwUdvHnnmv_Se
+    clientId: <set-as-environment-variable-instead>
+    clientSecret: <set-as-environment-variable-instead>
     
   github:
     # GitHub OAuth 2 client app can be setup at https://github.com/settings/developers            
-    clientId: e0737f257e60beee40e6
-    clientSecret: 5429b3fba0e197e576d5e64bcbb4661b3bc48312
+    clientId: <set-as-environment-variable-instead>
+    clientSecret: <set-as-environment-variable-instead>
     
   myauthserver:
     # My home-made auth server
