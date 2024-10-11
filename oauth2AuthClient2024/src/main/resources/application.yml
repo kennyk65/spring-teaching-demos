@@ -1,9 +1,3 @@
-# server:
-#   servlet:
-#     session:
-#       tracking-modes: cookie
-
-
 spring:
   application.name: client
   security:
@@ -11,11 +5,11 @@ spring:
       client:
         registration:
           github:
-            clientId: e0737f257e60beee40e6
-            clientSecret: 2dbe809c39965b6921426b964099bed04fcc4d6f
+            clientId: <set-as-environment-variable-instead>
+            clientSecret: <set-as-environment-variable-instead>
           google:
-            client-id: 1034653135442-j27ijg9om55p2ascg1gurbj3sp46iuek.apps.googleusercontent.com
-            client-secret: kmcGAl5meGxwwUdvHnnmv_Se
+            client-id: <set-as-environment-variable-instead>
+            client-secret: <set-as-environment-variable-instead>
 
 logging:
   level:
