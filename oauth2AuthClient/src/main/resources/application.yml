@@ -1,59 +1,38 @@
-logging.level.org.springframework.security: DEBUG
+spring:
+  application.name: client
+  security:
+    oauth2:
+      client:
+        registration:
 
-spring.security.oauth2.client.registration:
-  google:
-    # Google OAuth 2 client app can be setup at https://console.developers.google.com/apis/credentials            
-    clientId: <set-as-environment-variable-instead>
-    clientSecret: <set-as-environment-variable-instead>
-    
-  github:
-    # GitHub OAuth 2 client app can be setup at https://github.com/settings/developers            
-    clientId: <set-as-environment-variable-instead>
-    clientSecret: <set-as-environment-variable-instead>
-    
-  myauthserver:
-    # My home-made auth server
-    clientId: theOneAndOnlyClient
-    clientSecret: DoNotTellAnyone
-    clientName: myauthserver
-    authorizationGrantType: authorization_code
-    redirectUriTemplate: http://localhost:8080/login/oauth2/code/myauthserver   # Wild Guess
-    scope: user																# Wild Guess.  "user" works but fails later
+          # Github OAuth2 settings are controlled here: https://github.com/settings/developers
+          github:
+            clientId:  <set-as-environment-variable-instead>
+            clientSecret:  <set-as-environment-variable-instead>
 
-spring.security.oauth2.client.provider.myauthserver:
-  tokenUri: http://localhost:8050/authserver/oauth/token
-  authorizationUri: http://localhost:8050/authserver/oauth/authorize
-  userInfoUri: http://localhost:8050/authserver/user			# Wild Guess
-  userNameAttribute: name										# Wild Guess
+          # Google OAuth2 settings are controlled here:  https://console.cloud.google.com/apis/dashboard
+          google:
+            client-id: <set-as-environment-variable-instead>
+            client-secret: <set-as-environment-variable-instead>
 
+          # A Spring-based authorization server can be controlled here: https://github.com/kennyk65/spring-teaching-demos/tree/master/oauth2AuthServer
+          spring-auth-server:
+            client-id: oidc-client
+            client-secret: doNotTell
+            client-name: Spring Boot OAuth2 Client
+            provider: spring-authorization-server
+            scope: openid
+            redirect-uri: "http://localhost:8080/login/oauth2/code/oidc-client"
+            authorization-grant-type: "authorization_code"
 
+        provider:
+          spring-authorization-server:
+            authorization-uri: "http://localhost:9000/oauth2/authorize"
+            token-uri: "http://localhost:9000/oauth2/token"
+            # the user-info-uri defaults to "http://localhost:9000/userinfo"
+            jwk-set-uri: "http://localhost:9000/oauth2/jwks" 
+            user-name-attribute: "sub"  # Spring security calls the user's name "userName" and it is sent in the "sub" (subject) claim.
 
-#spring.security.oauth2.client.registration.ourauthserver.clientId: 233668646673605
-#spring.security.oauth2.client.registration.ourauthserver.clientSecret: 33b17e044ee6a4fa383f46ec6e28ea1d
-#spring.security.oauth2.client.registration.ourauthserver.clientName=ourauthserver
-#spring.security.oauth2.client.registration.ourauthserver.scope=read:user
-#spring.security.oauth2.client.registration.ourauthserver.client-authentication-method=
-#spring.security.oauth2.client.registration.ourauthserver.
-#spring.security.oauth2.client.registration.ourauthserver.
-#spring.security.oauth2.client.registration.ourauthserver.
-#            
-#			ClientRegistration.Builder builder = getBuilder(registrationId,
-#					ClientAuthenticationMethod.BASIC, DEFAULT_LOGIN_REDIRECT_URL);
-#			builder.scope("read:user");
-#			builder.authorizationUri("https://github.com/login/oauth/authorize");
-#			builder.tokenUri("https://github.com/login/oauth/access_token");
-#			builder.userInfoUri("https://api.github.com/user");
-#			builder.userNameAttributeName("id");
-#			builder.clientName("GitHub");            
-#            
-#            
-#security:
-#  oauth2:
-#    client:
-#      accessTokenUri: https://graph.facebook.com/oauth/access_token
-#      userAuthorizationUri: https://www.facebook.com/dialog/oauth
-#      tokenName: oauth_token
-#      authenticationScheme: query
-#      clientAuthenticationScheme: form
-#    resource:
-#      userInfoUri: https://graph.facebook.com/me            
+logging:
+  level:
+    org.springframework.security.oauth2: DEBUG
